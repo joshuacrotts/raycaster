@@ -33,11 +33,11 @@ public class Raycaster extends ThetaGraphicalApplication {
    * ArrayList of walls - generated walls are stored here for later comparison.
    */
   private ArrayList<Wall> walls;
-  
+
   /**
    * Field of view for the camera.
    */
-  private int fov = 360;
+  private int fov = 90;
 
   /**
    * Current angle of the player.
@@ -98,7 +98,7 @@ public class Raycaster extends ThetaGraphicalApplication {
    */
   private void drawRays() {
     ThetaGraphics.GFXContext.setColor(Color.white);
-    for (Line2D.Double line : calcRays(this.walls, 180, 250)) {
+    for (Line2D.Double line : calcRays(this.walls, 3000, 250)) {
       ThetaGraphics.GFXContext.draw(line);
     }
   }
@@ -130,19 +130,25 @@ public class Raycaster extends ThetaGraphicalApplication {
     int mx = this.getMouse().getMouseX();
     int my = this.getMouse().getMouseY();
 
+    // If we exceed the right-boundary, just bail out.
+    if (mx > this.getGameWidth() / 2) {
+      return rays;
+    }
+
     for (int r = 0; r < resolution; r++) {
       // Compute the angle of this ray, normalized to our field of view.
       double rayAngle = ThetaUtils.normalize(r, 0, resolution, angle, angle + fov);
-      
+
       // Compute the coordinates of the end of this ray.
       int ex = (int) (mx + maxDist * Math.cos(Math.toRadians(rayAngle)));
       int ey = (int) (my + maxDist * Math.sin(Math.toRadians(rayAngle)));
-      
+
       // Build the ray, and declare variables for finding the MINIMUM ray.
       Line2D.Double ray = new Line2D.Double(mx, my, ex, ey);
+      Color minColor = null;
       Point2D.Double minRay = null;
       double minDist = Integer.MAX_VALUE;
-      
+
       // For each wall, find the wall that is the closest intersected
       // if one exists.
       for (Wall wall : walls) {
@@ -152,18 +158,31 @@ public class Raycaster extends ThetaGraphicalApplication {
           if (dist <= minDist) {
             minDist = dist;
             minRay = rayEnd;
+            minColor = wall.getColor();
           }
         }
       }
-      
+
+      // If we found a nearest collision, assign it to be the end-point of the ray.
       if (minRay != null) {
         ray.x2 = minRay.x;
         ray.y2 = minRay.y;
       }
-      
+
+      // If the ray extends beyond the separator, set that as the end-point.
+      ray.x2 = ThetaUtils.clamp((int) ray.x2, 0, this.getGameWidth() / 2);
       rays.add(ray);
+
+      // Now... draw the rectangle in pseudo-3D.
+      int wallHeight = 100;
+      int screenR = RaycasterUtils.perspectiveProject(r, minDist, this.getGameWidth() / 2);
+      int topY = RaycasterUtils.perspectiveProject(-wallHeight / 2, minDist, this.getGameHeight());
+      int bottomY = RaycasterUtils.perspectiveProject(wallHeight / 2, minDist, this.getGameHeight());
+      
+      ThetaGraphics.GFXContext.setColor(minColor);
+      ThetaGraphics.GFXContext.drawLine(screenR + this.getGameWidth() / 2, topY, screenR + this.getGameWidth() / 2, bottomY);
     }
-    
+
     return rays;
   }
 
@@ -175,7 +194,7 @@ public class Raycaster extends ThetaGraphicalApplication {
   private class ChangeAngleEvent extends KeyAdapter {
 
     private final int MAX_ANGLE = 360;
-    
+
     private Raycaster raycaster;
 
     public ChangeAngleEvent(Raycaster raycaster) {

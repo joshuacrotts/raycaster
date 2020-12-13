@@ -13,6 +13,19 @@ public class RaycasterUtils {
   public static double dist(double x1, double y1, double x2, double y2) {
     return Math.sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
   }
+  
+  /**
+   * 
+   * @param coordinate
+   * @param depth
+   * @param bound
+   * @return
+   */
+  public static int perspectiveProject(double ordinate, double depth, double bound) {
+    double halfBound = bound * 0.5;
+    double newOrdinate = (ordinate - halfBound) / depth;
+    return (int) (newOrdinate + halfBound);
+  }
 
   /**
    * 
