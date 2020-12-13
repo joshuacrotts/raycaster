@@ -36,7 +36,7 @@ public class Wall {
       return null;
     }
 
-    int denominator = (int)((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
+    double denominator = ((y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1));
 
     // Lines are parallel
     if (denominator == 0) {
