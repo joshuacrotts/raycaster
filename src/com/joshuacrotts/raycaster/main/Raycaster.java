@@ -22,7 +22,7 @@ public class Raycaster extends ThetaGraphicalApplication {
   /**
    * Height of JFrame.
    */
-  private static final int HEIGHT = 600;
+  private static final int HEIGHT = 563;
 
   /**
    * 
