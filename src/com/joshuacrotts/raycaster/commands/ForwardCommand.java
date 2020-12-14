@@ -1,7 +1,8 @@
 package com.joshuacrotts.raycaster.commands;
 
+import java.awt.event.KeyEvent;
+
 import com.joshuacrotts.raycaster.main.Raycaster;
-import com.sun.glass.events.KeyEvent;
 import com.theta.input.Command;
 
 public class ForwardCommand extends Command {
@@ -19,7 +20,7 @@ public class ForwardCommand extends Command {
   /**
    * 
    */
-  private int speed = 5;
+  private double speed = 2;
 
   
   public ForwardCommand(Raycaster raycaster) {
@@ -38,11 +39,11 @@ public class ForwardCommand extends Command {
   }
   
   private void activate() {
-    int x = this.raycaster.getCameraX();
-    int y = this.raycaster.getCameraY();
+    double x = this.raycaster.getCameraX();
+    double y = this.raycaster.getCameraY();
     int modFOV = this.raycaster.getFOV() / 2;
     double radA = Math.toRadians(this.raycaster.getAngle() - modFOV + ANG_MOD);
-    this.raycaster.setCameraX((int) (x + speed * Math.cos(radA)));
-    this.raycaster.setCameraY((int) (y + speed * Math.sin(radA)));
+    this.raycaster.setCameraX((x + this.speed * Math.cos(radA)));
+    this.raycaster.setCameraY((y + this.speed * Math.sin(radA)));
   }
 }

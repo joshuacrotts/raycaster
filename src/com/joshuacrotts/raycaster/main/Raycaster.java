@@ -23,17 +23,17 @@ public class Raycaster extends ThetaGraphicalApplication {
    * Height of JFrame.
    */
   private static final int HEIGHT = 600;
-  
+
   /**
    * 
    */
   private final ForwardCommand fwdCmd;
-  
+
   /**
    * 
    */
   private final LeftCommand leftCmd;
-  
+
   /**
    * 
    */
@@ -45,10 +45,30 @@ public class Raycaster extends ThetaGraphicalApplication {
   private final int MAX_WALLS;
 
   /**
+   * Height offset of the walls.
+   */
+  private final double H_OFFSET = 10.0;
+  
+  /**
+   * Maximum height that a wall can be generated at.
+   */
+  private final int MAX_WALL_HEIGHT = (int) (this.getGameHeight() / 1.5);
+  
+  /**
    * ArrayList of walls - generated walls are stored here for later comparison.
    */
   private ArrayList<Wall> walls;
 
+  /**
+   * Current x position of the camera.
+   */
+  private double cameraX;
+
+  /**
+   * Current y position of the camera.
+   */
+  private double cameraY;
+  
   /**
    * Field of view for the camera.
    */
@@ -58,16 +78,6 @@ public class Raycaster extends ThetaGraphicalApplication {
    * Current angle of the camera.
    */
   private int angle = 0;
-  
-  /**
-   * Current x position of the camera.
-   */
-  private int cameraX;
-  
-  /**
-   * Current y position of the camera.
-   */
-  private int cameraY;
 
   public Raycaster() {
     super(WIDTH, HEIGHT, "Raycaster");
@@ -92,9 +102,9 @@ public class Raycaster extends ThetaGraphicalApplication {
   }
 
   /**
-   * Generates the walls. Each wall is generated with a starting coordinate and
-   * an ending coordinate. Meaning that for now, each wall is just a line that
-   * has a color associated.
+   * Generates the walls. Each wall is generated with a starting coordinate and an
+   * ending coordinate. Meaning that for now, each wall is just a line that has a
+   * color associated.
    */
   private void generateWalls() {
     this.walls = new ArrayList<Wall>(MAX_WALLS);
@@ -167,7 +177,7 @@ public class Raycaster extends ThetaGraphicalApplication {
     int h = this.getGameHeight() / 2;
     ThetaGraphics.rect(x, y, w, h, ThetaGraphics.BABY_BLUE, true, 0);
   }
-  
+
   /**
    * Draws the floor - this is at the bottom-half of the screen.
    * 
@@ -192,11 +202,11 @@ public class Raycaster extends ThetaGraphicalApplication {
    */
   private ArrayList<Line2D.Double> calcRays(ArrayList<Wall> walls, int resolution, int maxDist) {
     ArrayList<Line2D.Double> rays = new ArrayList<>();
-    int mx = cameraX;//this.getMouse().getMouseX();
-    int my = cameraY;//this.getMouse().getMouseY();
+    double mx = this.getMouse().getMouseX();
+    double my = this.getMouse().getMouseY();
 
     // If we exceed the right-boundary, just bail out.
-    if (mx > this.getGameWidth() / 2) {
+    if (mx > this.getGameWidth() / 2.0) {
       return rays;
     }
 
@@ -205,8 +215,8 @@ public class Raycaster extends ThetaGraphicalApplication {
       double rayAngle = ThetaUtils.normalize(r, 0, resolution, angle, angle + fov);
 
       // Compute the coordinates of the end of this ray.
-      int ex = (int) (mx + maxDist * Math.cos(Math.toRadians(rayAngle)));
-      int ey = (int) (my + maxDist * Math.sin(Math.toRadians(rayAngle)));
+      double ex = (mx + maxDist * Math.cos(Math.toRadians(rayAngle)));
+      double ey = (my + maxDist * Math.sin(Math.toRadians(rayAngle)));
 
       // Build the ray, and declare variables for finding the MINIMUM ray.
       Line2D.Double ray = new Line2D.Double(mx, my, ex, ey);
@@ -219,11 +229,13 @@ public class Raycaster extends ThetaGraphicalApplication {
       for (Wall wall : walls) {
         if (wall.getLine().intersectsLine(ray)) {
           Point2D.Double rayEnd = wall.intersection(ray);
-          double dist = rayEnd.distance(mx, my);
-          if (dist <= minDist) {
-            minDist = dist;
-            minRay = rayEnd;
-            minColor = wall.getColor();
+          if (rayEnd != null) {
+            double dist = rayEnd.distance(mx, my);
+            if (dist <= minDist) {
+              minDist = dist;
+              minRay = rayEnd;
+              minColor = wall.getColor();
+            }
           }
         }
       }
@@ -239,51 +251,65 @@ public class Raycaster extends ThetaGraphicalApplication {
       rays.add(ray);
 
       // Now... draw the rectangle in pseudo-3D.
-      // Fix the fish-eye effect first.
-      double ca = ThetaUtils.clamp((int) (this.angle + fov / 2 - rayAngle), 0, 360);
-      minDist = minDist * Math.cos(Math.toRadians(ca));
-      
-      // X coordinate.
-      int rx = (int) ThetaUtils.normalize(r, 0, resolution, this.getGameWidth() / 2, this.getGameWidth());
-      
-      // Wall height calculation.
-      final double H_OFFSET = 25.0;
-      final int MAX_WALL_HEIGHT = this.getGameHeight() / 2;
-      double wallHeight = ThetaUtils.clamp((int) (this.getGameHeight() * H_OFFSET / minDist), 0, MAX_WALL_HEIGHT);
-      
-      // Y coordinate.
-      double lineO = this.getGameHeight() / 2.0 - wallHeight / 2.0;
-      ThetaGraphics.GFXContext.setColor(minColor);
-      ThetaGraphics.GFXContext.drawLine(rx, (int) lineO, rx, (int) (wallHeight + lineO));
+      this.renderWalls(r, resolution, fov, rayAngle, minDist, minColor);
     }
 
     return rays;
   }
   
-  public int getCameraX() {
+  /**
+   * 
+   * @param r
+   * @param resolution
+   * @param fov
+   * @param rayAngle
+   * @param minDist
+   * @return
+   */
+  private void renderWalls(double r, double resolution, double fov, double rayAngle, double minDist, Color minColor) { 
+    // Fix the fish-eye effect first (doesn't quite work).
+    double ca = ThetaUtils.clamp((int) (this.angle + fov / 2 - rayAngle), 0, 360);
+    minDist = minDist * Math.cos(Math.toRadians(ca));
+
+    // X coordinate.
+    int rx = (int) ThetaUtils.normalize(r, 0, resolution, this.getGameWidth() / 2, this.getGameWidth());
+
+    // Wall height calculation.
+    int height = (int) (this.getGameHeight() * H_OFFSET / minDist);
+    
+    // Clamp the height to be in our range.
+    double wallHeight = ThetaUtils.clamp(height, 0, MAX_WALL_HEIGHT);
+
+    // Y coordinate.
+    double lineO = this.getGameHeight() / 2.0 - wallHeight / 2.0;
+    ThetaGraphics.GFXContext.setColor(minColor);
+    ThetaGraphics.GFXContext.drawLine(rx, (int) lineO, rx, (int) (wallHeight + lineO));
+  }
+
+  public double getCameraX() {
     return cameraX;
   }
 
-  public void setCameraX(int cameraX) {
+  public void setCameraX(double cameraX) {
     this.cameraX = cameraX;
   }
 
-  public int getCameraY() {
+  public double getCameraY() {
     return cameraY;
   }
 
-  public void setCameraY(int cameraY) {
+  public void setCameraY(double cameraY) {
     this.cameraY = cameraY;
   }
 
   public void setAngle(int a) {
     this.angle = a;
   }
-  
+
   public int getAngle() {
     return this.angle;
   }
-  
+
   public int getFOV() {
     return this.fov;
   }

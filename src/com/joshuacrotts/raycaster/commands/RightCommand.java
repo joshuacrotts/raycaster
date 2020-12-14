@@ -1,7 +1,8 @@
 package com.joshuacrotts.raycaster.commands;
 
+import java.awt.event.KeyEvent;
+
 import com.joshuacrotts.raycaster.main.Raycaster;
-import com.sun.glass.events.KeyEvent;
 import com.theta.input.Command;
 
 public class RightCommand extends Command {
