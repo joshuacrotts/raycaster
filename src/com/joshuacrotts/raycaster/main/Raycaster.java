@@ -275,10 +275,7 @@ public class Raycaster extends ThetaGraphicalApplication {
     int rx = (int) ThetaUtils.normalize(r, 0, resolution, this.getGameWidth() / 2, this.getGameWidth());
 
     // Wall height calculation.
-    int height = (int) (this.getGameHeight() * H_OFFSET / minDist);
-    
-    // Clamp the height to be in our range.
-    double wallHeight = ThetaUtils.clamp(height, 0, MAX_WALL_HEIGHT);
+    int wallHeight = (int) (this.getGameHeight() * H_OFFSET / minDist);
 
     // Y coordinate.
     double lineO = this.getGameHeight() / 2.0 - wallHeight / 2.0;
