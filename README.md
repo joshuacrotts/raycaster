@@ -12,7 +12,7 @@ Raycaster is a small ray-casting engine (go figure!) written in Java. There are 
 
 ## Dependencies
 
-This program uses my Theta library. The JAR file is in that repository on my GitHub.
+This program uses my Theta library. The JAR file is located [here](https://github.com/JoshuaCrotts/Theta/blob/master/lib/Theta.jar).
 
 ## Rebuilding Raycaster
 
