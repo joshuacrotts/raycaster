@@ -8,6 +8,8 @@ import java.awt.geom.Point2D;
 public abstract class Wall {
 
   private Color color;
+  
+  private Color modColor;
 
   public Wall(Color color) {
     this.color = color;
@@ -23,5 +25,13 @@ public abstract class Wall {
   
   public Color getColor() {
     return this.color;
+  }
+  
+  public void setModColor(Color c) {
+    this.modColor = c;
+  }
+  
+  public Color getModColor() {
+    return this.modColor;
   }
 }

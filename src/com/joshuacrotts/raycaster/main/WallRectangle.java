@@ -36,7 +36,13 @@ public class WallRectangle extends Wall {
 
     for (WallRectangleLine l : wallLines) {
       if (l.getLine().intersectsLine(oLine)) {
-        Raycaster.color = l.getID() == 0 ? this.getColor().darker().darker() : l.getID() == 1 || l.getID() == 3 ? this.getColor().darker() : this.getColor();
+        if (l.getID() == 0) {
+          this.setModColor(this.getColor().darker().darker());
+        } else if (l.getID() == 1 || l.getID() == 3) {
+          this.setModColor(this.getColor().darker());
+        } else {
+          this.setModColor(this.getColor());
+        }
         return RaycasterUtils.intersection(l.getLine(), oLine);
       }
     }

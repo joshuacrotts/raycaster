@@ -15,8 +15,6 @@ import com.theta.util.ThetaUtils;
 
 public class Raycaster extends ThetaGraphicalApplication {
 
-  public static Color color;
-
   /**
    * Width of JFrame.
    */
@@ -71,7 +69,7 @@ public class Raycaster extends ThetaGraphicalApplication {
    * Current y position of the camera.
    */
   private double cameraY;
-
+  
   /**
    * Field of view for the camera.
    */
@@ -114,16 +112,16 @@ public class Raycaster extends ThetaGraphicalApplication {
     this.walls = new ArrayList<Wall>(MAX_WALLS);
 
     for (int i = 0; i < MAX_WALLS; i++) {
-      int x1 = ThetaUtils.randomInt(0, this.getGameWidth() / 2);
-      int y1 = ThetaUtils.randomInt(0, this.getGameHeight());
+      int x = ThetaUtils.randomInt(0, this.getGameWidth() / 2);
+      int y = ThetaUtils.randomInt(0, this.getGameHeight());
       int w = ThetaUtils.randomInt(5, 125);
       int h = ThetaUtils.randomInt(5, 125);
       Color color = ThetaGraphics.getRandomColor();
 
-      w = ThetaUtils.clamp(w, 0, this.getGameWidth() / 2 - w);
+      w = ThetaUtils.clamp(x + w, 0, this.getGameWidth() / 2 - x - w);
       h = ThetaUtils.clamp(h, 0, this.getGameHeight() - h);
 
-      this.walls.add(new WallRectangle(new Rectangle(x1, y1, w, h), color));
+      this.walls.add(new WallRectangle(new Rectangle(x, y, w, h), color));
     }
   }
 
@@ -150,7 +148,7 @@ public class Raycaster extends ThetaGraphicalApplication {
    */
   private void drawRays() {
     ThetaGraphics.GFXContext.setColor(Color.white);
-    for (Line2D.Double line : calcRays(this.walls, 800, 300)) {
+    for (Line2D.Double line : calcRays(this.walls, 800, 600)) {
       ThetaGraphics.GFXContext.draw(line);
     }
   }
@@ -240,7 +238,7 @@ public class Raycaster extends ThetaGraphicalApplication {
           if (dist <= minDist) {
             minDist = dist;
             minRay = rayEnd;
-            minColor = Raycaster.color;
+            minColor = wall.getModColor() != null ? wall.getModColor() : wall.getColor();
           }
         }
       }
