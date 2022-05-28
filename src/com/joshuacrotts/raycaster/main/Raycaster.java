@@ -4,6 +4,10 @@ import java.awt.Color;
 import java.awt.Rectangle;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import com.joshuacrotts.raycaster.commands.ForwardCommand;
@@ -13,17 +17,19 @@ import com.theta.graphic.ThetaGraphics;
 import com.theta.platform.ThetaGraphicalApplication;
 import com.theta.util.ThetaUtils;
 
+import javax.imageio.ImageIO;
+
 public class Raycaster extends ThetaGraphicalApplication {
 
   /**
    * Width of JFrame.
    */
-  private static final int WIDTH = 1000;
+  private static final int WIDTH = 1280;
 
   /**
    * Height of JFrame.
    */
-  private static final int HEIGHT = 563;
+  private static final int HEIGHT = 640;
 
   /**
    * 
@@ -44,6 +50,8 @@ public class Raycaster extends ThetaGraphicalApplication {
    * Max number of walls to generate in the program.
    */
   private final int MAX_WALLS;
+
+  private BufferedImage texture;
 
   /**
    * Height offset of the walls.
@@ -80,18 +88,20 @@ public class Raycaster extends ThetaGraphicalApplication {
    */
   private int angle = 0;
 
-  public Raycaster() {
+  public Raycaster() throws IOException {
     super(WIDTH, HEIGHT, "Raycaster");
 
     this.fwdCmd = new ForwardCommand(this);
     this.leftCmd = new LeftCommand(this);
     this.rightCmd = new RightCommand(this);
     this.MAX_WALLS = ThetaUtils.randomInt(10, 20);
+    this.texture = ImageIO.read(new File("wall.png"));
     this.generateWalls();
   }
 
   @Override
   public void update() {
+    this.movingWall.getShape().x += 1;
   }
 
   @Override
@@ -108,21 +118,21 @@ public class Raycaster extends ThetaGraphicalApplication {
    * ending coordinate. Meaning that for now, each wall is just a line that has a
    * color associated.
    */
+  private WallRectangle movingWall = new WallRectangle(new Rectangle2D.Double(15, 200, 100, 20), ThetaGraphics.getRandomColor());
   private void generateWalls() {
     this.walls = new ArrayList<Wall>(MAX_WALLS);
 
     for (int i = 0; i < MAX_WALLS; i++) {
-      int x = ThetaUtils.randomInt(0, this.getGameWidth() / 2);
-      int y = ThetaUtils.randomInt(0, this.getGameHeight());
-      int w = ThetaUtils.randomInt(5, 125);
-      int h = ThetaUtils.randomInt(5, 125);
+      int x = i * 32;
+      int y = 128;
+      int w = 32;
+      int h = 32;
       Color color = ThetaGraphics.getRandomColor();
 
-      w = ThetaUtils.clamp(x + w, 0, this.getGameWidth() / 2 - x - w);
-      h = ThetaUtils.clamp(h, 0, this.getGameHeight() - h);
-
-      this.walls.add(new WallRectangle(new Rectangle(x, y, w, h), color));
+      this.walls.add(new WallRectangle(new Rectangle2D.Double(x, y, w, h), color));
     }
+
+    this.walls.add(this.movingWall);
   }
 
   /**
@@ -148,7 +158,7 @@ public class Raycaster extends ThetaGraphicalApplication {
    */
   private void drawRays() {
     ThetaGraphics.GFXContext.setColor(Color.white);
-    for (Line2D.Double line : calcRays(this.walls, 800, 600)) {
+    for (Line2D.Double line : calcRays(this.walls, WIDTH / 2, 600)) {
       ThetaGraphics.GFXContext.draw(line);
     }
   }
@@ -176,10 +186,10 @@ public class Raycaster extends ThetaGraphicalApplication {
    * @return void.
    */
   private void drawSky() {
-    int x = this.getGameWidth() / 2;
-    int y = 0;
     int w = this.getGameWidth() / 2;
     int h = this.getGameHeight() / 2;
+    int x = this.getGameWidth() / 2 + w / 2;
+    int y = this.getGameHeight() / 2 - h / 2;
     ThetaGraphics.rect(x, y, w, h, ThetaGraphics.BABY_BLUE, true, 0);
   }
 
@@ -191,10 +201,10 @@ public class Raycaster extends ThetaGraphicalApplication {
    * @return void.
    */
   private void drawFloor() {
-    int x = this.getGameWidth() / 2;
-    int y = this.getGameHeight() / 2;
     int w = this.getGameWidth() / 2;
     int h = this.getGameHeight() / 2;
+    int x = this.getGameWidth() / 2 + w / 2;
+    int y = this.getGameHeight() / 2 + h / 2;
     ThetaGraphics.rect(x, y, w, h, new Color(127, 127, 127), true, 0);
   }
 
@@ -254,7 +264,7 @@ public class Raycaster extends ThetaGraphicalApplication {
       rays.add(ray);
 
       // Now... draw the rectangle in pseudo-3D.
-      this.renderWalls(r, resolution, fov, rayAngle, minDist, minColor);
+      this.renderWalls(ray, r, resolution, fov, rayAngle, minDist, minColor);
     }
 
     return rays;
@@ -269,22 +279,27 @@ public class Raycaster extends ThetaGraphicalApplication {
    * @param minDist
    * @return
    */
-  private void renderWalls(double r, double resolution, double fov, double rayAngle, double minDist, Color minColor) {
+  private void renderWalls(Line2D.Double ray, double r, double resolution, double fov, double rayAngle, double minDist, Color minColor) {
     // Fix the fish-eye effect first (doesn't quite work).
     double ca = ThetaUtils.clamp((int) (this.angle + fov / 2 - rayAngle), 0, 360);
     minDist = minDist * Math.cos(Math.toRadians(ca));
 
     // X coordinate.
-    int rx = (int) ThetaUtils.normalize(r, 0, resolution, this.getGameWidth() / 2, this.getGameWidth());
+    int rx = (int) ThetaUtils.normalize(r, 0, resolution, this.getGameWidth() / 2.0, this.getGameWidth());
 
     // Wall height calculation.
     double wallHeight = (this.getGameHeight() * H_OFFSET / minDist);
 
     // Y coordinate.
     double lineO = this.getGameHeight() / 2.0 - wallHeight / 2.0;
-
-    ThetaGraphics.GFXContext.setColor(minColor);
-    ThetaGraphics.GFXContext.drawLine(rx, (int) lineO, rx, (int) (wallHeight + lineO));
+    int imgX = 0;
+    // ????????????????????????????????????????????
+    if (ray.y2 != (int)ray.y2) {
+        imgX = (int) ((ray.y2 / 64 - Math.floor(ray.y2 / 64)) * this.texture.getWidth());
+    } else {
+        imgX = (int) ((ray.x2 / 64 - Math.floor(ray.x2 / 64)) * this.texture.getWidth());
+    }
+    ThetaGraphics.GFXContext.drawImage(this.texture, rx, (int) lineO, rx + 1, (int) (wallHeight + lineO), imgX, 0, imgX + 1, this.texture.getHeight(),null);
   }
 
   public double getCameraX() {

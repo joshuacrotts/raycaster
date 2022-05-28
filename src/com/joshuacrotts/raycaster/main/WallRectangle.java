@@ -1,7 +1,6 @@
 package com.joshuacrotts.raycaster.main;
 
-import java.awt.Color;
-import java.awt.Shape;
+import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -10,9 +9,9 @@ import java.util.Collections;
 
 public class WallRectangle extends Wall {
 
-  private Rectangle2D rect;
+  private Rectangle2D.Double rect;
 
-  public WallRectangle(Rectangle2D rect, Color color) {
+  public WallRectangle(Rectangle2D.Double rect, Color color) {
     super(color);
     this.rect = rect;
   }
@@ -51,7 +50,7 @@ public class WallRectangle extends Wall {
   }
 
   @Override
-  public Shape getShape() {
+  public Rectangle2D.Double getShape() {
     return this.rect;
   }
 
