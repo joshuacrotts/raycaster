@@ -1,8 +1,8 @@
 package com.joshuacrotts.projection;
 
+import com.joshuacrotts.Ray;
 import com.joshuacrotts.RaycasterPanel;
 import com.joshuacrotts.RaycasterRunner;
-import com.joshuacrotts.Ray;
 import com.joshuacrotts.RaycasterUtils;
 
 import javax.swing.*;
@@ -28,12 +28,12 @@ public class RaycasterProjectionPanel extends JPanel {
     private final RaycasterPanel RAYCASTER_PANEL;
 
     /**
-     *
+     * Sky rendered as the top-half of the projection plane.
      */
     private final ProjectionSky PROJECTION_SKY;
 
     /**
-     *
+     * Floor rendered as the bottom-half of the projection plane.
      */
     private final ProjectionFloor PROJECTION_FLOOR;
 
@@ -53,50 +53,66 @@ public class RaycasterProjectionPanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(Color.BLACK);
-        g2d.fillRect(0,0,this.getPreferredSize().width, this.getPreferredSize().height);
+        g2d.fillRect(0, 0, this.getPreferredSize().width, this.getPreferredSize().height);
         this.PROJECTION_SKY.draw(g2d);
         this.PROJECTION_FLOOR.draw(g2d);
         this.project(g2d);
     }
 
     /**
-     *
      * @param g2
      */
     private void project(final Graphics2D g2) {
         ArrayList<Ray> rayList = this.RAYCASTER_PANEL.getRayList();
         for (int i = 0; i < rayList.size(); i++) {
-            if (rayList.get(i).getDistance() == 0) { continue; }
+            if (rayList.get(i).getDistance() == 0) {
+                continue;
+            }
             // Generate the (x, y) coordinate of the wall, as well as its height.
             double wallX = RaycasterUtils.normalize(i, 0, rayList.size(), 0, this.getPreferredSize().width);
             double wallHeight = this.getPreferredSize().height * MAX_HEIGHT_OFFSET / rayList.get(i).getDistance();
             double wallY = this.getPreferredSize().height / 2.f - wallHeight / 2.f;
 
+            // Depending on what "type" the Ray stores, we render differently.
             Ray ray = rayList.get(i);
-            if (ray.getProjectionImage() != null) {
-                BufferedImage img = ray.getProjectionImage();
-                int imgX;
-                if (ray.getLine().y2 != (int) ray.getLine().y2) {
-                    imgX = (int) ((ray.getLine().y2 / img.getWidth() - Math.floor(ray.getLine().y2 / img.getWidth())) * img.getWidth());
-                } else {
-                    imgX = (int) ((ray.getLine().x2 / img.getWidth() - Math.floor(ray.getLine().x2 / img.getWidth())) * img.getWidth());
-                }
-                g2.drawImage(img, (int) wallX, (int) wallY, (int) wallX + 1, (int) (wallHeight + wallY), imgX, 0,
-                        imgX + 1, img.getHeight(), null);
-            }
-
-            // Compute a shaded color based on how far the wall is from the camera.
-            else if (ray.getProjectionColor() != null) {
-                double coloredHeight = RaycasterUtils.clamp(wallHeight, 0, this.getPreferredSize().height - 200);
-                coloredHeight = RaycasterUtils.normalize(coloredHeight, 0, this.getPreferredSize().height - 200);
-
-                // Convert the color used in the projection to HSB, then back to RGB to use the new brightness value.
-                Color c = rayList.get(i).getProjectionColor();
-                //float[] colors = Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), null);
-                //g2.setColor(new Color(Color.HSBtoRGB(colors[0], colors[1], (float) coloredHeight)));
-                g2.setColor(c);
-                g2.drawLine((int) wallX, (int) wallY, (int) wallX, (int) (wallY + wallHeight));
+            if (ray.getEntityData().isTexture()) {
+                this.projectTexture(wallX, wallY, wallHeight, ray, g2);
+            } else if (ray.getEntityData().isColor()) {
+                this.projectColor(wallX, wallY, wallHeight, ray, g2);
             }
         }
     }
+
+    /**
+     * @param wallX
+     * @param wallY
+     * @param wallHeight
+     * @param ray
+     * @param g2
+     */
+    private void projectTexture(final double wallX, final double wallY, final double wallHeight, final Ray ray, final Graphics2D g2) {
+        BufferedImage img = ray.getEntityData().getTexture();
+        int imgX;
+        if (ray.getLine().getY2() != (int) ray.getLine().getY2()) {
+            imgX = (int) ((ray.getLine().getY2() / img.getWidth() - Math.floor(ray.getLine().getY2() / img.getWidth())) * img.getWidth());
+        } else {
+            imgX = (int) ((ray.getLine().getX2() / img.getWidth() - Math.floor(ray.getLine().getX2() / img.getWidth())) * img.getWidth());
+        }
+        g2.drawImage(img, (int) wallX, (int) wallY, (int) wallX + 1, (int) (wallHeight + wallY), imgX, 0,
+                imgX + 1, img.getHeight(), null);
+    }
+
+    /**
+     * @param wallX
+     * @param wallY
+     * @param wallHeight
+     * @param ray
+     * @param g2
+     */
+    private void projectColor(final double wallX, final double wallY, final double wallHeight, final Ray ray, final Graphics2D g2) {
+        Color c = ray.getEntityData().getColor();
+        g2.setColor(c);
+        g2.drawLine((int) wallX, (int) wallY, (int) wallX, (int) (wallY + wallHeight));
+    }
+
 }

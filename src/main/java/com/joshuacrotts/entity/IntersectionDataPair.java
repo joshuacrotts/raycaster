@@ -1,30 +1,29 @@
 package com.joshuacrotts.entity;
 
-import java.awt.*;
 import java.awt.geom.Point2D;
 
-public class IntersectionDataPair<P extends Point2D.Double, D> {
+public class IntersectionDataPair {
 
     /**
      *
      */
-    private final P POINT;
+    private final Point2D.Double POINT;
 
     /**
      *
      */
-    private final D ITEM;
+    private final EntityData DATA;
 
-    public IntersectionDataPair(final P point, final D item) {
+    public IntersectionDataPair(final Point2D.Double point, final EntityData item) {
         this.POINT = point;
-        this.ITEM = item;
+        this.DATA = item;
     }
 
-    public P getPoint() {
+    public Point2D.Double getPoint() {
         return this.POINT;
     }
 
-    public D getData() {
-        return this.ITEM;
+    public EntityData getData() {
+        return this.DATA;
     }
 }

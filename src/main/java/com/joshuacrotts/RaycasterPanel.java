@@ -1,14 +1,15 @@
 package com.joshuacrotts;
 
-import com.joshuacrotts.entity.*;
+import com.joshuacrotts.entity.Camera;
+import com.joshuacrotts.entity.CollidableEntity2D;
+import com.joshuacrotts.entity.EntityData;
+import com.joshuacrotts.entity.IntersectionDataPair;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-
-import javax.swing.*;
 
 /**
  * Displays and updates the logic for the top-down raycasting implementation.
@@ -20,7 +21,7 @@ public final class RaycasterPanel extends JPanel {
     /**
      * Max length of any ray.
      */
-    private static final int MAX_DIST = 1280;
+    private static final int MAX_DIST = 2000;
 
     /**
      * We need to keep a reference to the parent swing app for sizing and
@@ -51,10 +52,10 @@ public final class RaycasterPanel extends JPanel {
     public RaycasterPanel(final RaycasterRunner raycasterRunner) {
         this.RUNNER = raycasterRunner;
         this.RAY_LIST = new ArrayList<>();
-        this.MAP = new TileMap("map1.dat", 22, 22);
-        this.CAMERA = new Camera(400, 400);
-        this.RESOLUTION = 1280;
+        this.MAP = new TileMap("map2.dat");
+        this.CAMERA = new Camera(400, 225);
         this.setPreferredSize(new Dimension(this.RUNNER.getWidth() / 2, this.RUNNER.getHeight()));
+        this.RESOLUTION = this.getPreferredSize().width;
         this.addKeyListener(this.CAMERA.getKeyAdapter());
         this.requestFocusInWindow(true);
     }
@@ -77,7 +78,8 @@ public final class RaycasterPanel extends JPanel {
     }
 
     /**
-     *
+     * Computes the rays originating from the Camera's position. Each ray starts as an "infinite" line segment that
+     * spans up to RESOLUTION pixels. Its endpoint is then truncated to the nearest object that it intersects.
      */
     private void computeRays() {
         this.RAY_LIST.clear();
@@ -97,21 +99,16 @@ public final class RaycasterPanel extends JPanel {
 
             // Iterate through all objects in the plane and find collisions.
             Point2D.Double minPt = null;
-            BufferedImage minImg = null;
-            Color minColor = null;
+            EntityData minData = null;
             double minDist = Integer.MAX_VALUE;
             for (CollidableEntity2D entity : this.MAP.getEntities()) {
-                IntersectionDataPair<?,?> ip = entity.intersectionPt(rayLine);
+                IntersectionDataPair ip = entity.intersectionPt(rayLine);
                 if (ip.getPoint() != null) {
                     double currMinDist = ip.getPoint().distance(this.CAMERA.getX(), this.CAMERA.getY());
                     if (currMinDist <= minDist) {
                         minDist = currMinDist;
                         minPt = ip.getPoint();
-                        if (entity instanceof Colorable) {
-                            minColor = (Color) ip.getData();
-                        } else if (entity instanceof Texturable) {
-                            minImg = (BufferedImage) ip.getData();
-                        }
+                        minData = ip.getData();
                     }
                 }
             }
@@ -122,17 +119,9 @@ public final class RaycasterPanel extends JPanel {
                 rayLine.x2 = minPt.x;
                 rayLine.y2 = minPt.y;
                 double ca = RaycasterUtils.normalize(rayAngle, newMin, newMax, -this.CAMERA.getFov() / 2, this.CAMERA.getFov() / 2);
-                if (minColor != null) {
-                    ray = new Ray(rayLine, minColor, rayAngle, minDist * Math.cos(Math.toRadians(ca)));
-                } else {
-                    ray = new Ray(rayLine, minImg , rayAngle, minDist * Math.cos(Math.toRadians(ca)));
-                }
+                ray = new Ray(rayLine, minData, rayAngle, minDist * Math.cos(Math.toRadians(ca)));
             } else {
-                if (minColor != null) {
-                    ray = new Ray(rayLine, minColor, rayAngle);
-                } else {
-                    ray = new Ray(rayLine, minImg , rayAngle);
-                }
+                ray = new Ray(rayLine, minData, rayAngle);
             }
 
             this.RAY_LIST.add(ray);
@@ -140,13 +129,11 @@ public final class RaycasterPanel extends JPanel {
     }
 
     /**
-     *
      * @param g2
      */
     private void drawRays(final Graphics2D g2) {
-        ArrayList<Ray> rayList = this.RAY_LIST;
-        for (int i = 0; i < rayList.size(); i++) {
-            rayList.get(i).draw(g2);
+        for (int i = 0; i < this.RAY_LIST.size(); i++) {
+            this.RAY_LIST.get(i).draw(g2);
         }
     }
 

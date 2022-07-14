@@ -2,7 +2,6 @@ package com.joshuacrotts.entity;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
 
 public abstract class RectangleObject2D extends CollidableEntity2D {
 
@@ -29,7 +28,7 @@ public abstract class RectangleObject2D extends CollidableEntity2D {
     }
 
     @Override
-    public abstract IntersectionDataPair<Point2D.Double, ?> intersectionPt(final Line2D.Double ray);
+    public abstract IntersectionDataPair intersectionPt(final Line2D.Double ray);
 
     public double getWidth() {
         return this.WIDTH;

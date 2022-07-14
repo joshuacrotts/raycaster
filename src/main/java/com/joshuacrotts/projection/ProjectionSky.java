@@ -6,17 +6,17 @@ import java.awt.geom.Rectangle2D;
 public final class ProjectionSky extends Rectangle2D.Double {
 
     /**
-     *
+     * Color to use for the sky.
      */
-    private static final Color WOLF_SKY_COLOR = new Color(23, 22, 22);
+    private static final Color WOLF_SKY_COLOR = new Color(41, 41, 41);
 
     /**
-     *
+     * Instance of the projection panel.
      */
     private final RaycasterProjectionPanel PROJECTION_PANEL;
 
     public ProjectionSky(final RaycasterProjectionPanel projectionPanel) {
-        super(0, projectionPanel.getPreferredSize().height / 2.f, projectionPanel.getPreferredSize().width, projectionPanel.getPreferredSize().height / 2.f);
+        super(0, 0, projectionPanel.getPreferredSize().width, projectionPanel.getPreferredSize().height / 2.f);
         this.PROJECTION_PANEL = projectionPanel;
     }
 

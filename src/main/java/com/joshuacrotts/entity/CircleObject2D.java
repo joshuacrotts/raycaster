@@ -1,9 +1,5 @@
 package com.joshuacrotts.entity;
 
-import com.joshuacrotts.entity.CollidableEntity2D;
-import com.joshuacrotts.entity.IntersectionDataPair;
-import com.joshuacrotts.entity.texture.TextureCache;
-
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
@@ -28,10 +24,9 @@ public abstract class CircleObject2D extends CollidableEntity2D {
     }
 
     @Override
-    public abstract IntersectionDataPair<Point2D.Double, ?> intersectionPt(final Line2D.Double ray);
+    public abstract IntersectionDataPair intersectionPt(final Line2D.Double ray);
 
     /**
-     *
      * @param cx
      * @param cy
      * @param radius
@@ -43,21 +38,26 @@ public abstract class CircleObject2D extends CollidableEntity2D {
         Point2D.Double intersection1 = new Point2D.Double();
         Point2D.Double intersection2 = new Point2D.Double();
         int intersections = this.findLineCircleIntersections(cx, cy, radius, lineStart, lineEnd, intersection1, intersection2);
-        if (intersections == 1) { return intersection1; }
+        if (intersections == 1) {
+            return intersection1;
+        }
         if (intersections == 2) {
             double dist1 = intersection1.distance(lineStart);
             double dist2 = intersection2.distance(lineStart);
 
-            if (dist1 < dist2) { return intersection1; }
-            else { return intersection2; }
+            if (dist1 < dist2) {
+                return intersection1;
+            } else {
+                return intersection2;
+            }
         }
         return null;
     }
 
     // Find the points of intersection.
     protected int findLineCircleIntersections(double cx, double cy, double radius,
-                                            Point2D.Double point1, Point2D.Double point2,
-                                            Point2D.Double intersection1, Point2D.Double intersection2) {
+                                              Point2D.Double point1, Point2D.Double point2,
+                                              Point2D.Double intersection1, Point2D.Double intersection2) {
         double dx, dy, A, B, C, det, t;
 
         dx = point2.x - point1.x;

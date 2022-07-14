@@ -3,7 +3,8 @@ package com.joshuacrotts.entity;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.geom.Ellipse2D;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Path2D;
 
 public final class Camera {
 
@@ -76,8 +77,17 @@ public final class Camera {
     }
 
     public void draw(final Graphics2D g2) {
-        g2.setColor(Color.YELLOW);
-        g2.fill(new Ellipse2D.Double(this.x - this.WIDTH / 2.f, this.y - this.HEIGHT / 2.f, this.WIDTH, this.HEIGHT));
+        AffineTransform old = g2.getTransform();
+        g2.setColor(Color.RED);
+        g2.rotate(Math.toRadians(this.currentAngle), this.getX(), this.getY());
+        Path2D path = new Path2D.Double();
+        path.moveTo(this.getX() - 20, this.getY() - 10);
+        path.lineTo(this.getX() + 5, this.getY());
+        path.lineTo(this.getX() - 20, this.getY() + 10);
+        path.lineTo(this.getX() - 10, this.getY());
+        path.closePath();
+        g2.fill(path);
+        g2.setTransform(old);
     }
 
     public int getWidth() {
@@ -116,7 +126,9 @@ public final class Camera {
         return this.FOV;
     }
 
-    public double getFovDelta() { return this.fovDelta; }
+    public double getFovDelta() {
+        return this.fovDelta;
+    }
 
     public void setFovDelta(double fovDelta) {
         this.fovDelta = fovDelta;
@@ -175,7 +187,8 @@ public final class Camera {
             if (e.getKeyCode() == KeyEvent.VK_W || e.getKeyCode() == KeyEvent.VK_S) {
                 this.CAMERA.currentState &= ~(CameraState.MOVE_FORWARD | CameraState.MOVE_BACKWARD);
                 this.CAMERA.speed = 0;
-            } if (e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_D) {
+            }
+            if (e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_D) {
                 this.CAMERA.currentState &= ~(CameraState.TURN_LEFT | CameraState.TURN_RIGHT);
                 this.CAMERA.setFovDelta(0);
             }

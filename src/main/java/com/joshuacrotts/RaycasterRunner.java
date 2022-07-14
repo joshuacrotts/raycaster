@@ -2,7 +2,7 @@ package com.joshuacrotts;
 
 import com.joshuacrotts.projection.RaycasterProjectionPanel;
 
-import java.awt.GridLayout;
+import java.awt.*;
 
 /**
  * com.joshuacrotts.main.RaycasterRunner is the driver class where all JPanels and components
@@ -53,11 +53,10 @@ public final class RaycasterRunner extends SwingApplication {
 
     public RaycasterRunner(final int width, final int height, final int fps, final String title) {
         super(width, height, fps, title);
-        this.setFrameLayout(new GridLayout(NUM_ROWS, NUM_COLS));
-
         // Now, instantiate and add the two raycasting panels.
         this.RAYCASTER_PANEL = new RaycasterPanel(this);
         this.RAYCASTER_PROJ_PANEL = new RaycasterProjectionPanel(this, this.RAYCASTER_PANEL);
+        this.setFrameLayout(new GridLayout(NUM_ROWS, NUM_COLS));
         this.addComponent(this.RAYCASTER_PANEL);
         this.addComponent(this.RAYCASTER_PROJ_PANEL);
         this.packComponents();
@@ -65,15 +64,16 @@ public final class RaycasterRunner extends SwingApplication {
         this.RAYCASTER_PANEL.requestFocus(true); // Very important! Do not delete this line.
     }
 
-    @Override
-    public void run() {
-        assert RAYCASTER_PANEL != null;
-        this.RAYCASTER_PANEL.update();
-        this.RAYCASTER_PROJ_PANEL.update();
-    }
-
     public static void main(final String[] args) {
         RaycasterRunner runner = new RaycasterRunner(WIDTH, HEIGHT, TARGET_FPS, TITLE);
         runner.run();
+    }
+
+    @Override
+    public void run() {
+        if (this.RAYCASTER_PANEL != null && this.RAYCASTER_PROJ_PANEL != null) {
+            this.RAYCASTER_PANEL.update();
+            this.RAYCASTER_PROJ_PANEL.update();
+        }
     }
 }

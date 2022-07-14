@@ -1,13 +1,9 @@
 package com.joshuacrotts;
 
-import java.awt.Component;
-import java.awt.LayoutManager;
+import javax.swing.*;
+import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
 
 /**
  * This is essentially a wrapper for a Swing JFrame and a Thread starter, so the
@@ -78,8 +74,7 @@ public abstract class SwingApplication {
     /**
      * Sets the layout manager for the current JFrame.
      *
-     * @param layout
-     *            - LayoutManager type.
+     * @param layout - LayoutManager type.
      */
     public void setFrameLayout(LayoutManager layout) {
         this.FRAME.setLayout(layout);
@@ -88,8 +83,7 @@ public abstract class SwingApplication {
     /**
      * Adds a Component object to the content pane of this JFrame.
      *
-     * @param component
-     *            - component to add.
+     * @param component - component to add.
      */
     public void addComponent(Component component) {
         this.FRAME.getContentPane().add(component);
@@ -99,10 +93,8 @@ public abstract class SwingApplication {
      * Adds a Component object at a specific index to the content pane of this
      * JFrame.
      *
-     * @param component
-     *            - component to add.
-     * @param index
-     *            - index to add the new component to.
+     * @param component - component to add.
+     * @param index     - index to add the new component to.
      */
     public void addComponent(Component component, int index) {
         this.FRAME.getContentPane().add(component, index);
@@ -112,10 +104,8 @@ public abstract class SwingApplication {
      * Adds a Component object with predefined constraints to the end of the
      * content pane component list.
      *
-     * @param component
-     *            - component to add.
-     * @param constraints
-     *            - Component constraints.
+     * @param component   - component to add.
+     * @param constraints - Component constraints.
      */
     public void addComponent(Component component, Object constraints) {
         this.FRAME.getContentPane().add(component, constraints);
@@ -125,12 +115,9 @@ public abstract class SwingApplication {
      * Adds a Component object with predefined constraints at a specific index
      * to the content pane of this JFrame.
      *
-     * @param component
-     *            - component to add.
-     * @param constraints
-     *            - Component constraints.
-     * @param index
-     *            - index to add the new component to.
+     * @param component   - component to add.
+     * @param constraints - Component constraints.
+     * @param index       - index to add the new component to.
      */
     public void addComponent(Component component, Object constraints,
                              int index) {
@@ -198,14 +185,14 @@ public abstract class SwingApplication {
 
     // =================== GETTERS AND SETTERS ====================== //
 
+    public int getFPS() {
+        return this.fps;
+    }
+
     public void setFPS(int fps) {
         this.fps = fps;
         this.ms = SECONDS_TO_MS / fps;
         this.timer.setDelay(this.ms);
-    }
-
-    public int getFPS() {
-        return this.fps;
     }
 
     public boolean isRunning() {

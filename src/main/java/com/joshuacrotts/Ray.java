@@ -1,91 +1,61 @@
 package com.joshuacrotts;
 
+import com.joshuacrotts.entity.EntityData;
+
 import java.awt.*;
 import java.awt.geom.Line2D;
-import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
 
 public class Ray {
 
     /**
-     *
+     * Line behind this Ray; holds the position.
      */
-    private final Line2D.Double line;
+    private final Line2D.Double LINE;
 
     /**
-     *
+     * Angle of this ray as cast from the Camera.
      */
-    private Color projectionColor;
+    private final double ANGLE;
 
     /**
-     *
+     * EntityData associated with this Ray. To be useful in the projection stage.
      */
-    private BufferedImage projectionImage;
+    private final EntityData DATA;
 
     /**
-     *
+     * Length of this Ray from the start point to the end. 0 indicates an infinite ray.
      */
-    private double distance;
+    private final double DISTANCE;
 
-    /**
-     *
-     */
-    private final double angle;
-
-    public Ray(final Line2D.Double line, BufferedImage image, final double angle) {
-        // A distance of 0 implies that it's an infinite ray.
+    public Ray(final Line2D.Double line, final EntityData image, final double angle) {
         this(line, image, angle, 0);
     }
 
-    public Ray(final Line2D.Double line, final BufferedImage image, final double angle, final double distance) {
-        this.line = line;
-        this.projectionImage = image;
-        this.angle = angle;
-        this.distance = distance;
-    }
-
-    public Ray(final Line2D.Double line, final Color color, final double angle) {
-        // A distance of 0 implies that it's an infinite ray.
-        this(line, color, angle, 0);
-    }
-
-    public Ray(final Line2D.Double line, final Color color, final double angle, final double distance) {
-        this.line = line;
-        this.projectionColor = color;
-        this.angle = angle;
-        this.distance = distance;
+    public Ray(final Line2D.Double line, final EntityData entityData, final double angle, final double distance) {
+        this.LINE = line;
+        this.DATA = entityData;
+        this.ANGLE = angle;
+        this.DISTANCE = distance;
     }
 
     public void draw(final Graphics2D g2) {
         g2.setColor(Color.WHITE);
-        g2.draw(this.line);
-    }
-
-    public void setDistance(final double dist) {
-        this.distance = dist;
+        g2.draw(this.LINE);
     }
 
     public double getDistance() {
-        return this.distance;
+        return this.DISTANCE;
     }
 
-    public double getAngle() { return this.angle; }
+    public double getAngle() {
+        return this.ANGLE;
+    }
 
     public Line2D.Double getLine() {
-        return this.line;
+        return this.LINE;
     }
 
-    public Color getProjectionColor() { return this.projectionColor; }
-
-    public void setProjectionColor(final Color color) {
-        this.projectionColor = color;
-    }
-
-    public BufferedImage getProjectionImage() {
-        return projectionImage;
-    }
-
-    public void setProjectionImage(BufferedImage projectionImage) {
-        this.projectionImage = projectionImage;
+    public EntityData getEntityData() {
+        return this.DATA;
     }
 }

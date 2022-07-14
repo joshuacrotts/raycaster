@@ -5,7 +5,9 @@ import com.joshuacrotts.entity.texture.TextureCircleObject2D;
 import com.joshuacrotts.entity.texture.TextureRectangleObject2D;
 
 import java.awt.*;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Objects;
 
@@ -21,20 +23,8 @@ public class TileMap {
      */
     private final ArrayList<CollidableEntity2D> ENTITIES;
 
-    /**
-     *
-     */
-    private final int ROWS;
-
-    /**
-     *
-     */
-    private final int COLS;
-
-    public TileMap(final String mapFile, final int rows, final int cols) {
-        this.ROWS = rows;
-        this.COLS = cols;
-        this.ENTITIES = new ArrayList<>(this.ROWS * this.COLS);
+    public TileMap(final String mapFile) {
+        this.ENTITIES = new ArrayList<>();
         this.parseFile(mapFile);
     }
 
@@ -47,20 +37,40 @@ public class TileMap {
             while ((line = reader.readLine()) != null) {
                 for (char ch : line.toCharArray()) {
                     switch (ch) {
-                        case 'W': {
-                            this.ENTITIES.add(new TextureRectangleObject2D(x, y, TILE_SIZE, TILE_SIZE, "wall1.png"));
+                        case '1': {
+                            this.ENTITIES.add(new TextureRectangleObject2D(x, y, TILE_SIZE, TILE_SIZE, "bird.png"));
                             break;
                         }
-                        case 'R': {
-                            this.ENTITIES.add(new TextureRectangleObject2D(x, y, TILE_SIZE, TILE_SIZE, "wall2.png"));
+                        case '2': {
+                            this.ENTITIES.add(new TextureRectangleObject2D(x, y, TILE_SIZE, TILE_SIZE, "redbrick.png"));
                             break;
                         }
-                        case 'C': {
-                            this.ENTITIES.add(new TextureCircleObject2D(x, y, TILE_SIZE / 2, "wall3.png"));
+                        case '3': {
+                            this.ENTITIES.add(new TextureRectangleObject2D(x, y, TILE_SIZE, TILE_SIZE, "purplestone.png"));
                             break;
                         }
-                        case 'T': {
-                            //this.ENTITIES.add(new ColorTriangleObject2D(x, y, TILE_SIZE, Color.YELLOW));
+                        case '4': {
+                            this.ENTITIES.add(new TextureRectangleObject2D(x, y, TILE_SIZE, TILE_SIZE, "stonebrick.png"));
+                            break;
+                        }
+                        case '5': {
+                            this.ENTITIES.add(new TextureRectangleObject2D(x, y, TILE_SIZE, TILE_SIZE, "bluestone.png"));
+                            break;
+                        }
+                        case '6': {
+                            this.ENTITIES.add(new TextureRectangleObject2D(x, y, TILE_SIZE, TILE_SIZE, "mossystone.png"));
+                            break;
+                        }
+                        case '7': {
+                            this.ENTITIES.add(new TextureRectangleObject2D(x, y, TILE_SIZE, TILE_SIZE, "wood.png"));
+                            break;
+                        }
+                        case '8': {
+                            this.ENTITIES.add(new TextureRectangleObject2D(x, y, TILE_SIZE, TILE_SIZE, "colorstone.png"));
+                            break;
+                        }
+                        case '9': {
+                            this.ENTITIES.add(new TextureCircleObject2D(x, y, TILE_SIZE / 2.f, "redbrick.png"));
                             break;
                         }
                     }

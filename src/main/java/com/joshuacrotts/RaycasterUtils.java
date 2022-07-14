@@ -20,7 +20,6 @@ public final class RaycasterUtils {
     public static final double HALFPI = Math.PI / 2;
 
     /**
-     *
      * @param thisLine
      * @param oLine
      * @return
@@ -74,7 +73,6 @@ public final class RaycasterUtils {
     }
 
     /**
-     *
      * @param n
      * @param oldMin
      * @param oldMax

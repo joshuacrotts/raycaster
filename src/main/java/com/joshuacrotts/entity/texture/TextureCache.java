@@ -2,12 +2,10 @@ package com.joshuacrotts.entity.texture;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 /**
  *
@@ -20,7 +18,6 @@ public class TextureCache {
     private static final Map<String, BufferedImage> IMAGE_CACHE_LIST = new HashMap<>();
 
     /**
-     *
      * @param imageName
      * @return
      */
@@ -33,7 +30,6 @@ public class TextureCache {
     }
 
     /**
-     *
      * @param imageName
      */
     private static void addImage(final String imageName) {

@@ -1,6 +1,7 @@
 package com.joshuacrotts.entity.texture;
 
 import com.joshuacrotts.RaycasterUtils;
+import com.joshuacrotts.entity.EntityData;
 import com.joshuacrotts.entity.IntersectionDataPair;
 import com.joshuacrotts.entity.RectangleObject2D;
 import com.joshuacrotts.entity.Texturable;
@@ -31,7 +32,7 @@ public class TextureRectangleObject2D extends RectangleObject2D implements Textu
     }
 
     @Override
-    public IntersectionDataPair<Point2D.Double, ?> intersectionPt(final Line2D.Double ray) {
+    public IntersectionDataPair intersectionPt(final Line2D.Double ray) {
         ArrayList<TextureWallSegment> lineSegments = (ArrayList<TextureWallSegment>) this.getLineSegments();
         Point2D.Double minPt = null;
         BufferedImage minImg = null;
@@ -49,7 +50,7 @@ public class TextureRectangleObject2D extends RectangleObject2D implements Textu
             }
         }
 
-        return new IntersectionDataPair<>(minPt, minImg);
+        return new IntersectionDataPair(minPt, new EntityData(minImg));
     }
 
     private ArrayList<TextureWallSegment> computeLineSegments() {

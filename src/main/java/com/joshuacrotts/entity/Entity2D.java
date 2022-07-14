@@ -4,8 +4,14 @@ import java.awt.*;
 
 public abstract class Entity2D implements Drawable2D {
 
+    /**
+     * X coordinate of the Entity.
+     */
     private double x;
 
+    /**
+     * Y coordinate of the Entity.
+     */
     private double y;
 
     public Entity2D() {

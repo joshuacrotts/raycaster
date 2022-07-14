@@ -2,6 +2,7 @@ package com.joshuacrotts.entity.color;
 
 import com.joshuacrotts.RaycasterUtils;
 import com.joshuacrotts.entity.Colorable;
+import com.joshuacrotts.entity.EntityData;
 import com.joshuacrotts.entity.IntersectionDataPair;
 import com.joshuacrotts.entity.RectangleObject2D;
 
@@ -32,7 +33,7 @@ public class ColorRectangleObject2D extends RectangleObject2D implements Colorab
     }
 
     @Override
-    public IntersectionDataPair<Point2D.Double, ?> intersectionPt(final Line2D.Double ray) {
+    public IntersectionDataPair intersectionPt(final Line2D.Double ray) {
         ArrayList<ColorWallSegment> lineSegments = (ArrayList<ColorWallSegment>) this.getLineSegments();
         Point2D.Double minPt = null;
         Color minColor = null;
@@ -50,7 +51,7 @@ public class ColorRectangleObject2D extends RectangleObject2D implements Colorab
             }
         }
 
-        return new IntersectionDataPair<>(minPt, minColor);
+        return new IntersectionDataPair(minPt, new EntityData(minColor));
     }
 
     private ArrayList<ColorWallSegment> computeLineSegments() {
