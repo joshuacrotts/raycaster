@@ -1,5 +1,9 @@
 package com.joshuacrotts.entity;
 
+import com.joshuacrotts.RaycasterPanel;
+import com.joshuacrotts.RaycasterUtils;
+import com.joshuacrotts.projection.RaycasterProjectionPanel;
+
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -14,9 +18,20 @@ public final class Camera {
     private final KeyAdapter KEY_ADAPTER;
 
     /**
+     *
+     */
+    private final RaycasterPanel RAYCASTER_PANEL;
+
+    /**
      * Use a 70-degree field-of-view.
      */
     private final double FOV = 70;
+
+    /**
+     * Keeps track of how far the camera is from the projection plane.
+     * This is a constant value based on the size of the scene.
+     */
+    private final double DISTANCE_TO_PROJECTION_PLANE;
 
     /**
      * Width of the camera in pixels.
@@ -27,6 +42,7 @@ public final class Camera {
      * Height of the camera in pixels.
      */
     private final int HEIGHT = 20;
+
 
     /**
      * Current x ordinate of the camera.
@@ -58,18 +74,20 @@ public final class Camera {
      */
     private int currentState;
 
-    public Camera(final double x, final double y) {
+    public Camera(final RaycasterPanel raycasterPanel, final double x, final double y) {
         this.x = x;
         this.y = y;
         this.currentAngle = 0;
         this.currentState = CameraState.STATIONARY;
+        this.RAYCASTER_PANEL = raycasterPanel;
+        this.DISTANCE_TO_PROJECTION_PLANE = (this.RAYCASTER_PANEL.getPreferredSize().width / 2.f) / (Math.tan(Math.toRadians(this.FOV / 2.f)));
         this.KEY_ADAPTER = new CameraKeyAdapter(this);
     }
 
     public void update() {
         if (this.isMoving()) {
-            this.x += this.speed * Math.cos(Math.toRadians(this.currentAngle));
-            this.y += this.speed * Math.sin(Math.toRadians(this.currentAngle));
+            this.x += this.speed * RaycasterUtils.cos(Math.toRadians(this.currentAngle));
+            this.y += this.speed * RaycasterUtils.sin(Math.toRadians(this.currentAngle));
         }
         if (this.isTurning()) {
             this.currentAngle += this.fovDelta;
@@ -143,6 +161,10 @@ public final class Camera {
     public boolean isTurning() {
         return CameraState.isFlagEnabled(this.currentState, CameraState.TURN_LEFT)
                 || CameraState.isFlagEnabled(this.currentState, CameraState.TURN_RIGHT);
+    }
+
+    public double getDistanceToProjectionPlane() {
+        return this.DISTANCE_TO_PROJECTION_PLANE;
     }
 
     public KeyAdapter getKeyAdapter() {

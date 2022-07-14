@@ -53,8 +53,8 @@ public final class RaycasterPanel extends JPanel {
         this.RUNNER = raycasterRunner;
         this.RAY_LIST = new ArrayList<>();
         this.MAP = new TileMap("map2.dat");
-        this.CAMERA = new Camera(400, 225);
         this.setPreferredSize(new Dimension(this.RUNNER.getWidth() / 2, this.RUNNER.getHeight()));
+        this.CAMERA = new Camera(this, 400, 225);
         this.RESOLUTION = this.getPreferredSize().width;
         this.addKeyListener(this.CAMERA.getKeyAdapter());
         this.requestFocusInWindow(true);
@@ -75,6 +75,7 @@ public final class RaycasterPanel extends JPanel {
         this.drawRays(g2d);
         this.MAP.draw(g2d);
         this.CAMERA.draw(g2d);
+        g2d.setColor(Color.RED);
     }
 
     /**
@@ -85,14 +86,14 @@ public final class RaycasterPanel extends JPanel {
         this.RAY_LIST.clear();
         for (int r = 0; r < this.RESOLUTION; r++) {
             double newMin = (this.CAMERA.getCurrentAngle() - this.CAMERA.getFov() / 2);
-            double newMax = (this.CAMERA.getCurrentAngle() + this.CAMERA.getFov() / 2) ;
+            double newMax = (this.CAMERA.getCurrentAngle() + this.CAMERA.getFov() / 2);
 
             // Compute the angle of this ray, normalized to our FOV.
             double rayAngle = RaycasterUtils.normalize(r, 0, this.RESOLUTION, newMin, newMax);
 
             // Compute the coordinates of the end of this ray.
-            double ex = this.CAMERA.getX() + MAX_DIST * Math.cos(Math.toRadians(rayAngle));
-            double ey = this.CAMERA.getY() + MAX_DIST * Math.sin(Math.toRadians(rayAngle));
+            double ex = this.CAMERA.getX() + MAX_DIST * RaycasterUtils.cos(Math.toRadians(rayAngle));
+            double ey = this.CAMERA.getY() + MAX_DIST * RaycasterUtils.sin(Math.toRadians(rayAngle));
 
             // Construct the current ray object for later.
             Line2D.Double rayLine = new Line2D.Double(this.CAMERA.getX(), this.CAMERA.getY(), ex, ey);
@@ -119,7 +120,7 @@ public final class RaycasterPanel extends JPanel {
                 rayLine.x2 = minPt.x;
                 rayLine.y2 = minPt.y;
                 double ca = RaycasterUtils.normalize(rayAngle, newMin, newMax, -this.CAMERA.getFov() / 2, this.CAMERA.getFov() / 2);
-                ray = new Ray(rayLine, minData, rayAngle, minDist * Math.cos(Math.toRadians(ca)));
+                ray = new Ray(rayLine, minData, rayAngle, minDist * RaycasterUtils.cos(Math.toRadians(ca)));
             } else {
                 ray = new Ray(rayLine, minData, rayAngle);
             }
@@ -143,5 +144,9 @@ public final class RaycasterPanel extends JPanel {
 
     public ArrayList<Ray> getRayList() {
         return this.RAY_LIST;
+    }
+
+    public Camera getCamera() {
+        return this.CAMERA;
     }
 }

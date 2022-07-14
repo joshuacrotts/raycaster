@@ -4,6 +4,7 @@ import com.joshuacrotts.Ray;
 import com.joshuacrotts.RaycasterPanel;
 import com.joshuacrotts.RaycasterRunner;
 import com.joshuacrotts.RaycasterUtils;
+import com.joshuacrotts.entity.texture.TextureCache;
 
 import javax.swing.*;
 import java.awt.*;
@@ -43,6 +44,8 @@ public class RaycasterProjectionPanel extends JPanel {
         this.RAYCASTER_PANEL = raycasterPanel;
         this.PROJECTION_SKY = new ProjectionSky(this);
         this.PROJECTION_FLOOR = new ProjectionFloor(this);
+        this.PROJECTION_FLOOR.setTexturedFloor(true);
+        this.PROJECTION_SKY.setTexturedCeiling(true);
     }
 
     public void update() {
@@ -75,11 +78,16 @@ public class RaycasterProjectionPanel extends JPanel {
 
             // Depending on what "type" the Ray stores, we render differently.
             Ray ray = rayList.get(i);
-            if (ray.getEntityData().isTexture()) {
-                this.projectTexture(wallX, wallY, wallHeight, ray, g2);
-            } else if (ray.getEntityData().isColor()) {
-                this.projectColor(wallX, wallY, wallHeight, ray, g2);
-            }
+            this.projectWall(ray, wallX, wallY, wallHeight, g2);
+            this.projectFloorCeiling(ray, wallX, wallY, wallHeight);
+        }
+    }
+
+    private void projectWall(final Ray ray, final double wallX, final double wallY, final double wallHeight, final Graphics2D g2) {
+        if (ray.getEntityData().isTexture()) {
+            this.projectTexture(ray, wallX, wallY, wallHeight, g2);
+        } else if (ray.getEntityData().isColor()) {
+            this.projectColor(ray, wallX, wallY, wallHeight, g2);
         }
     }
 
@@ -90,7 +98,7 @@ public class RaycasterProjectionPanel extends JPanel {
      * @param ray
      * @param g2
      */
-    private void projectTexture(final double wallX, final double wallY, final double wallHeight, final Ray ray, final Graphics2D g2) {
+    private void projectTexture(final Ray ray, final double wallX, final double wallY, final double wallHeight, final Graphics2D g2) {
         BufferedImage img = ray.getEntityData().getTexture();
         int imgX;
         if (ray.getLine().getY2() != (int) ray.getLine().getY2()) {
@@ -109,10 +117,35 @@ public class RaycasterProjectionPanel extends JPanel {
      * @param ray
      * @param g2
      */
-    private void projectColor(final double wallX, final double wallY, final double wallHeight, final Ray ray, final Graphics2D g2) {
+    private void projectColor(final Ray ray, final double wallX, final double wallY, final double wallHeight, final Graphics2D g2) {
         Color c = ray.getEntityData().getColor();
         g2.setColor(c);
         g2.drawLine((int) wallX, (int) wallY, (int) wallX, (int) (wallY + wallHeight));
+    }
+
+    private void projectFloorCeiling(final Ray ray, final double wallX, final double wallY, final double wallHeight) {
+        if (this.PROJECTION_SKY.isTexturedCeiling() || this.PROJECTION_FLOOR.isTexturedFloor()) {
+            final double TEXTURE_SCALE = 32;
+            final double CAMERA_HEIGHT = 32;
+            final int TEXTURE_SIZE = 16;
+            final double CAMERA_X = this.RAYCASTER_PANEL.getCamera().getX();
+            final double CAMERA_Y = this.RAYCASTER_PANEL.getCamera().getY();
+            final double DTPP = this.RAYCASTER_PANEL.getCamera().getDistanceToProjectionPlane();
+            final double ANGLE = RaycasterUtils.cos(Math.toRadians(this.RAYCASTER_PANEL.getCamera().getCurrentAngle() - ray.getAngle()));
+            final double RAY_COSANGLE = RaycasterUtils.cos(Math.toRadians(ray.getAngle()));
+            final double RAY_SINANGLE = RaycasterUtils.sin(Math.toRadians(ray.getAngle()));
+
+            for (int y = (int) (wallY + wallHeight + 1); y < this.getPreferredSize().height; y++) {
+                double r = y - this.getPreferredSize().height / 2.f;
+                double d = (CAMERA_HEIGHT * DTPP / r) / ANGLE;
+                double tileX = CAMERA_X + d * RAY_COSANGLE;
+                double tileY = CAMERA_Y + d * RAY_SINANGLE;
+                int textureX = Math.floorMod((int) (tileX * TEXTURE_SIZE / TEXTURE_SCALE), TEXTURE_SIZE);
+                int textureY = Math.floorMod((int) (tileY * TEXTURE_SIZE / TEXTURE_SCALE), TEXTURE_SIZE);
+                this.PROJECTION_FLOOR.setPixel((int) wallX, y - this.getPreferredSize().height / 2, textureX, textureY);
+                this.PROJECTION_SKY.setPixel((int) wallX, this.getPreferredSize().height - y, textureX, textureY);
+            }
+        }
     }
 
 }
