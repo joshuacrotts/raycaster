@@ -1,15 +1,16 @@
-package com.joshuacrotts.main;
+package com.joshuacrotts;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 
 public class Ray {
 
     /**
      *
      */
-    private Line2D.Double line;
+    private final Line2D.Double line;
 
     /**
      *
@@ -19,12 +20,29 @@ public class Ray {
     /**
      *
      */
+    private BufferedImage projectionImage;
+
+    /**
+     *
+     */
     private double distance;
 
     /**
      *
      */
-    private double angle;
+    private final double angle;
+
+    public Ray(final Line2D.Double line, BufferedImage image, final double angle) {
+        // A distance of 0 implies that it's an infinite ray.
+        this(line, image, angle, 0);
+    }
+
+    public Ray(final Line2D.Double line, final BufferedImage image, final double angle, final double distance) {
+        this.line = line;
+        this.projectionImage = image;
+        this.angle = angle;
+        this.distance = distance;
+    }
 
     public Ray(final Line2D.Double line, final Color color, final double angle) {
         // A distance of 0 implies that it's an infinite ray.
@@ -61,5 +79,13 @@ public class Ray {
 
     public void setProjectionColor(final Color color) {
         this.projectionColor = color;
+    }
+
+    public BufferedImage getProjectionImage() {
+        return projectionImage;
+    }
+
+    public void setProjectionImage(BufferedImage projectionImage) {
+        this.projectionImage = projectionImage;
     }
 }

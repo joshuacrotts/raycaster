@@ -1,6 +1,6 @@
-package com.joshuacrotts.main;
+package com.joshuacrotts;
 
-import com.joshuacrotts.main.projection.RaycasterProjectionPanel;
+import com.joshuacrotts.projection.RaycasterProjectionPanel;
 
 import java.awt.GridLayout;
 
@@ -67,6 +67,7 @@ public final class RaycasterRunner extends SwingApplication {
 
     @Override
     public void run() {
+        assert RAYCASTER_PANEL != null;
         this.RAYCASTER_PANEL.update();
         this.RAYCASTER_PROJ_PANEL.update();
     }

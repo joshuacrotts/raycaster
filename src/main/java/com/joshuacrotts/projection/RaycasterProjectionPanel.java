@@ -1,12 +1,13 @@
-package com.joshuacrotts.main.projection;
+package com.joshuacrotts.projection;
 
-import com.joshuacrotts.main.Ray;
-import com.joshuacrotts.main.RaycasterPanel;
-import com.joshuacrotts.main.RaycasterRunner;
-import com.joshuacrotts.main.RaycasterUtils;
+import com.joshuacrotts.RaycasterPanel;
+import com.joshuacrotts.RaycasterRunner;
+import com.joshuacrotts.Ray;
+import com.joshuacrotts.RaycasterUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 public class RaycasterProjectionPanel extends JPanel {
@@ -71,15 +72,31 @@ public class RaycasterProjectionPanel extends JPanel {
             double wallHeight = this.getPreferredSize().height * MAX_HEIGHT_OFFSET / rayList.get(i).getDistance();
             double wallY = this.getPreferredSize().height / 2.f - wallHeight / 2.f;
 
-            // Compute a shaded color based on how far the wall is from the camera.
-            double coloredHeight = RaycasterUtils.clamp(wallHeight, 0, this.getPreferredSize().height - 200);
-            coloredHeight = RaycasterUtils.normalize(coloredHeight, 0, this.getPreferredSize().height - 200);
+            Ray ray = rayList.get(i);
+            if (ray.getProjectionImage() != null) {
+                BufferedImage img = ray.getProjectionImage();
+                int imgX;
+                if (ray.getLine().y2 != (int) ray.getLine().y2) {
+                    imgX = (int) ((ray.getLine().y2 / img.getWidth() - Math.floor(ray.getLine().y2 / img.getWidth())) * img.getWidth());
+                } else {
+                    imgX = (int) ((ray.getLine().x2 / img.getWidth() - Math.floor(ray.getLine().x2 / img.getWidth())) * img.getWidth());
+                }
+                g2.drawImage(img, (int) wallX, (int) wallY, (int) wallX + 1, (int) (wallHeight + wallY), imgX, 0,
+                        imgX + 1, img.getHeight(), null);
+            }
 
-            // Convert the color used in the projection to HSB, then back to RGB to use the new brightness value.
-            Color c = rayList.get(i).getProjectionColor();
-            float[] colors = Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), null);
-            g2.setColor(new Color(Color.HSBtoRGB(colors[0], colors[1], (float) coloredHeight)));
-            g2.drawLine((int) wallX, (int) wallY, (int) wallX, (int) (wallY + wallHeight));
+            // Compute a shaded color based on how far the wall is from the camera.
+            else if (ray.getProjectionColor() != null) {
+                double coloredHeight = RaycasterUtils.clamp(wallHeight, 0, this.getPreferredSize().height - 200);
+                coloredHeight = RaycasterUtils.normalize(coloredHeight, 0, this.getPreferredSize().height - 200);
+
+                // Convert the color used in the projection to HSB, then back to RGB to use the new brightness value.
+                Color c = rayList.get(i).getProjectionColor();
+                //float[] colors = Color.RGBtoHSB(c.getRed(), c.getGreen(), c.getBlue(), null);
+                //g2.setColor(new Color(Color.HSBtoRGB(colors[0], colors[1], (float) coloredHeight)));
+                g2.setColor(c);
+                g2.drawLine((int) wallX, (int) wallY, (int) wallX, (int) (wallY + wallHeight));
+            }
         }
     }
 }

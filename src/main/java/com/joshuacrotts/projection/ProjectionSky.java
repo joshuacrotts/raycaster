@@ -1,4 +1,4 @@
-package com.joshuacrotts.main.projection;
+package com.joshuacrotts.projection;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;

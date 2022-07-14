@@ -1,4 +1,4 @@
-package com.joshuacrotts.main;
+package com.joshuacrotts;
 
 import java.awt.Component;
 import java.awt.LayoutManager;

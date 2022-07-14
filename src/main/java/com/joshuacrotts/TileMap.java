@@ -1,15 +1,13 @@
-package com.joshuacrotts.main;
+package com.joshuacrotts;
 
-import com.joshuacrotts.main.entity.CollidableEntity2D;
-import com.joshuacrotts.main.entity.Drawable2D;
-import com.joshuacrotts.main.entity.color.ColorRectangleObject2D;
+import com.joshuacrotts.entity.CollidableEntity2D;
+import com.joshuacrotts.entity.texture.TextureCircleObject2D;
+import com.joshuacrotts.entity.texture.TextureRectangleObject2D;
 
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class TileMap {
 
@@ -41,12 +39,7 @@ public class TileMap {
     }
 
     public void parseFile(final String mapFile) {
-        BufferedReader reader = null;
-        try {
-            reader = new BufferedReader(new FileReader(mapFile));
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+        BufferedReader reader = new BufferedReader(new InputStreamReader(Objects.requireNonNull(this.getClass().getClassLoader().getResourceAsStream(mapFile))));
         int x = 0;
         int y = 0;
         String line = null;
@@ -55,11 +48,19 @@ public class TileMap {
                 for (char ch : line.toCharArray()) {
                     switch (ch) {
                         case 'W': {
-                            this.ENTITIES.add(new ColorRectangleObject2D(x, y, TILE_SIZE, TILE_SIZE, Color.BLUE));
+                            this.ENTITIES.add(new TextureRectangleObject2D(x, y, TILE_SIZE, TILE_SIZE, "wall1.png"));
                             break;
                         }
                         case 'R': {
-                            this.ENTITIES.add(new ColorRectangleObject2D(x, y, TILE_SIZE, TILE_SIZE, Color.RED));
+                            this.ENTITIES.add(new TextureRectangleObject2D(x, y, TILE_SIZE, TILE_SIZE, "wall2.png"));
+                            break;
+                        }
+                        case 'C': {
+                            this.ENTITIES.add(new TextureCircleObject2D(x, y, TILE_SIZE / 2, "wall3.png"));
+                            break;
+                        }
+                        case 'T': {
+                            //this.ENTITIES.add(new ColorTriangleObject2D(x, y, TILE_SIZE, Color.YELLOW));
                             break;
                         }
                     }

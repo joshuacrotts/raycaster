@@ -1,4 +1,4 @@
-package com.joshuacrotts.main.entity;
+package com.joshuacrotts.entity;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;

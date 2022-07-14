@@ -1,12 +1,11 @@
-package com.joshuacrotts.main;
+package com.joshuacrotts;
 
-import com.joshuacrotts.main.entity.*;
-import com.joshuacrotts.main.entity.color.ColorRectangleObject2D;
+import com.joshuacrotts.entity.*;
 
 import java.awt.*;
-import java.awt.event.KeyEvent;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 
 import javax.swing.*;
@@ -52,13 +51,12 @@ public final class RaycasterPanel extends JPanel {
     public RaycasterPanel(final RaycasterRunner raycasterRunner) {
         this.RUNNER = raycasterRunner;
         this.RAY_LIST = new ArrayList<>();
-        this.MAP = new TileMap("map1.dat", 9, 10);
+        this.MAP = new TileMap("map1.dat", 22, 22);
         this.CAMERA = new Camera(400, 400);
-        this.RESOLUTION = this.RUNNER.getWidth() / 2;
+        this.RESOLUTION = 1280;
         this.setPreferredSize(new Dimension(this.RUNNER.getWidth() / 2, this.RUNNER.getHeight()));
         this.addKeyListener(this.CAMERA.getKeyAdapter());
         this.requestFocusInWindow(true);
-        // this.initActions();
     }
 
     public void update() {
@@ -72,30 +70,10 @@ public final class RaycasterPanel extends JPanel {
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(Color.BLACK);
         g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
+        g2d.translate(-(this.CAMERA.getX() - this.getWidth() / 2.f), -(this.CAMERA.getY() - this.getHeight() / 2.f));
         this.drawRays(g2d);
         this.MAP.draw(g2d);
         this.CAMERA.draw(g2d);
-    }
-
-    /**
-     *
-     */
-    private void initActions() {
-//        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_W, 0, false), "forward");
-//        this.getActionMap().put("forward", new CameraForwardAction(this.CAMERA));
-//
-//        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_D, 0, false), "increaseAngle");
-//        this.getActionMap().put("increaseAngle", new CameraIncreaseAngleAction(this.CAMERA));
-//
-//        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_A, 0, false), "decreaseAngle");
-//        this.getActionMap().put("decreaseAngle", new CameraDecreaseAngleAction(this.CAMERA));
-//
-//        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_D, 0, true), "stopAngle");
-//        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_A, 0, true), "stopAngle");
-//        this.getActionMap().put("stopAngle", new CameraHaltAngleAction(this.CAMERA));
-//
-//        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_W, 0, true), "stopForward");
-//        this.getActionMap().put("stopForward", new CameraHaltForwardAction(this.CAMERA));
     }
 
     /**
@@ -119,18 +97,20 @@ public final class RaycasterPanel extends JPanel {
 
             // Iterate through all objects in the plane and find collisions.
             Point2D.Double minPt = null;
+            BufferedImage minImg = null;
             Color minColor = null;
             double minDist = Integer.MAX_VALUE;
             for (CollidableEntity2D entity : this.MAP.getEntities()) {
-                if (entity instanceof ColorRectangleObject2D) {
-                    ColorRectangleObject2D ce2d = (ColorRectangleObject2D) entity;
-                    IntersectionDataPair intersectPair = ce2d.intersectionPt(rayLine);
-                    if (intersectPair.getPoint() != null) {
-                        double currMinDist = intersectPair.getPoint().distance(this.CAMERA.getX(), this.CAMERA.getY());
-                        if (currMinDist <= minDist) {
-                            minPt = intersectPair.getPoint();
-                            minDist = currMinDist;
-                            minColor = intersectPair.getColor();
+                IntersectionDataPair<?,?> ip = entity.intersectionPt(rayLine);
+                if (ip.getPoint() != null) {
+                    double currMinDist = ip.getPoint().distance(this.CAMERA.getX(), this.CAMERA.getY());
+                    if (currMinDist <= minDist) {
+                        minDist = currMinDist;
+                        minPt = ip.getPoint();
+                        if (entity instanceof Colorable) {
+                            minColor = (Color) ip.getData();
+                        } else if (entity instanceof Texturable) {
+                            minImg = (BufferedImage) ip.getData();
                         }
                     }
                 }
@@ -142,9 +122,17 @@ public final class RaycasterPanel extends JPanel {
                 rayLine.x2 = minPt.x;
                 rayLine.y2 = minPt.y;
                 double ca = RaycasterUtils.normalize(rayAngle, newMin, newMax, -this.CAMERA.getFov() / 2, this.CAMERA.getFov() / 2);
-                ray = new Ray(rayLine, minColor, rayAngle, minDist * Math.cos(Math.toRadians(ca)));
+                if (minColor != null) {
+                    ray = new Ray(rayLine, minColor, rayAngle, minDist * Math.cos(Math.toRadians(ca)));
+                } else {
+                    ray = new Ray(rayLine, minImg , rayAngle, minDist * Math.cos(Math.toRadians(ca)));
+                }
             } else {
-                ray = new Ray(rayLine, minColor, rayAngle);
+                if (minColor != null) {
+                    ray = new Ray(rayLine, minColor, rayAngle);
+                } else {
+                    ray = new Ray(rayLine, minImg , rayAngle);
+                }
             }
 
             this.RAY_LIST.add(ray);

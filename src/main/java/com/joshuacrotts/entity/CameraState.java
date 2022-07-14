@@ -1,4 +1,4 @@
-package com.joshuacrotts.main.entity;
+package com.joshuacrotts.entity;
 
 public final class CameraState {
 

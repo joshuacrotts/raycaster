@@ -1,9 +1,11 @@
-package com.joshuacrotts.main.entity.color;
+package com.joshuacrotts.entity.color;
+
+import com.joshuacrotts.entity.Colorable;
 
 import java.awt.*;
 import java.awt.geom.Line2D;
 
-public class ColorWallSegment extends Line2D.Double {
+public class ColorWallSegment extends Line2D.Double implements Colorable {
 
     /**
      *
@@ -15,6 +17,7 @@ public class ColorWallSegment extends Line2D.Double {
         this.COLOR = color;
     }
 
+    @Override
     public Color getColor() {
         return this.COLOR;
     }
