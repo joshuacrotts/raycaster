@@ -84,8 +84,8 @@ public final class RaycasterPanel extends JPanel {
     private void computeRays() {
         this.RAY_LIST.clear();
         for (int r = 0; r < this.RESOLUTION; r++) {
-            double newMin = (this.CAMERA.getCurrentAngle() - this.CAMERA.getFov() / 2) + 360;
-            double newMax = (this.CAMERA.getCurrentAngle() + this.CAMERA.getFov() / 2) + 360;
+            double newMin = (this.CAMERA.getCurrentAngle() - this.CAMERA.getFov() / 2);
+            double newMax = (this.CAMERA.getCurrentAngle() + this.CAMERA.getFov() / 2) ;
 
             // Compute the angle of this ray, normalized to our FOV.
             double rayAngle = RaycasterUtils.normalize(r, 0, this.RESOLUTION, newMin, newMax);

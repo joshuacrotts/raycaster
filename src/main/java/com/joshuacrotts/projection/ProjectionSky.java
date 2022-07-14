@@ -8,7 +8,7 @@ public final class ProjectionSky extends Rectangle2D.Double {
     /**
      * Color to use for the sky.
      */
-    private static final Color WOLF_SKY_COLOR = new Color(41, 41, 41);
+    private static final Color WOLF_SKY_COLOR = new Color(22, 23, 22);
 
     /**
      * Instance of the projection panel.
@@ -21,7 +21,7 @@ public final class ProjectionSky extends Rectangle2D.Double {
     }
 
     public void draw(final Graphics2D g2) {
-//        GradientPaint gp = new GradientPaint((float) 100.f, (float) 0, Color.BLACK, (float) 100.f, (float) 300.f, WOLF_SKY_COLOR);
+//        GradientPaint gp = new GradientPaint((float) 100.f, (float) 0, WOLF_SKY_COLOR, (float) 100.f, (float) 300.f, Color.BLACK);
 //        g2.setPaint(gp);
         g2.setColor(WOLF_SKY_COLOR);
         g2.fill(this);

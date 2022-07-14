@@ -54,7 +54,7 @@ public class TextureRectangleObject2D extends RectangleObject2D implements Textu
     }
 
     private ArrayList<TextureWallSegment> computeLineSegments() {
-        RescaleOp op = new RescaleOp(0.65f, 0, null);
+        RescaleOp op = new RescaleOp(0.5f, 0, null);
         BufferedImage darkerImage = op.filter(this.getTexture(), null);
         ArrayList<TextureWallSegment> lineSegments = new ArrayList<>();
         lineSegments.add(new TextureWallSegment(this.getX(), this.getY(), this.getX(), this.getY() + this.getHeight(), darkerImage)); // TL -> BL

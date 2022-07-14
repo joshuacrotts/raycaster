@@ -175,10 +175,10 @@ public final class Camera {
 
             if (e.getKeyCode() == KeyEvent.VK_A) {
                 this.CAMERA.currentState |= CameraState.TURN_LEFT;
-                this.CAMERA.setFovDelta(-5);
+                this.CAMERA.setFovDelta(-3);
             } else if (e.getKeyCode() == KeyEvent.VK_D) {
                 this.CAMERA.currentState |= CameraState.TURN_RIGHT;
-                this.CAMERA.setFovDelta(+5);
+                this.CAMERA.setFovDelta(3);
             }
         }
 
@@ -190,7 +190,6 @@ public final class Camera {
             }
             if (e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_D) {
                 this.CAMERA.currentState &= ~(CameraState.TURN_LEFT | CameraState.TURN_RIGHT);
-                this.CAMERA.setFovDelta(0);
             }
         }
     }
