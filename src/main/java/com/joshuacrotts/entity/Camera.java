@@ -62,7 +62,7 @@ public final class Camera {
     /**
      * Speed of the Camera when moving forward or backward.
      */
-    private double speed = 5;
+    private double speed;
 
     /**
      * Current angle of the camera.
@@ -189,10 +189,10 @@ public final class Camera {
         public void keyPressed(KeyEvent e) {
             if (e.getKeyCode() == KeyEvent.VK_W) {
                 this.CAMERA.currentState |= CameraState.MOVE_FORWARD;
-                this.CAMERA.speed = 5;
+                this.CAMERA.speed = 2;
             } else if (e.getKeyCode() == KeyEvent.VK_S) {
                 this.CAMERA.currentState |= CameraState.MOVE_BACKWARD;
-                this.CAMERA.speed = -5;
+                this.CAMERA.speed = -2;
             }
 
             if (e.getKeyCode() == KeyEvent.VK_A) {

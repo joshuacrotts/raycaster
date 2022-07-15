@@ -6,7 +6,7 @@ import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
-public final class ProjectionSky extends Rectangle2D.Double {
+public final class ProjectionCeiling extends Rectangle2D.Double {
 
     /**
      * Color to use for the sky.
@@ -33,10 +33,10 @@ public final class ProjectionSky extends Rectangle2D.Double {
      */
     private boolean texturedCeiling;
 
-    public ProjectionSky(final RaycasterProjectionPanel projectionPanel) {
+    public ProjectionCeiling(final RaycasterProjectionPanel projectionPanel) {
         super(0, 0, projectionPanel.getPreferredSize().width, projectionPanel.getPreferredSize().height / 2.f);
         this.PROJECTION_PANEL = projectionPanel;
-        this.CEILING_TEXTURE = TextureCache.getImage("test_floor.png");
+        this.CEILING_TEXTURE = TextureCache.getImage("stonebrick.png");
         this.CEILING_BUFFER = new BufferedImage(projectionPanel.getPreferredSize().width, projectionPanel.getPreferredSize().height/2, BufferedImage.TYPE_INT_RGB);
     }
 
