@@ -9,6 +9,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
+import java.util.HashSet;
+import java.util.Set;
 
 public final class Camera {
 
@@ -18,7 +20,7 @@ public final class Camera {
     private final KeyAdapter KEY_ADAPTER;
 
     /**
-     *
+     * Instance of RaycasterPanel for accessing any necessary objects.
      */
     private final RaycasterPanel RAYCASTER_PANEL;
 
@@ -43,6 +45,20 @@ public final class Camera {
      */
     private final int HEIGHT = 20;
 
+    /**
+     * Default walk speed for the camera in the 3d projection.
+     */
+    private final double DEFAULT_WALK_SPEED = 1.5;
+
+    /**
+     * Default run speed for the camera in the 3d projection.
+     */
+    private final double DEFAULT_RUN_SPEED = 3;
+
+    /**
+     * Default turn speed for the camera in the 3d projection.
+     */
+    private final double DEFAULT_TURN_SPEED = 3;
 
     /**
      * Current x ordinate of the camera.
@@ -153,9 +169,19 @@ public final class Camera {
     }
 
     public boolean isMoving() {
-        return CameraState.isFlagEnabled(this.currentState, CameraState.MOVE_FORWARD)
-                || CameraState.isFlagEnabled(this.currentState, CameraState.MOVE_BACKWARD);
+        return CameraState.isFlagEnabled(this.currentState, CameraState.WALK_FORWARD)
+                || CameraState.isFlagEnabled(this.currentState, CameraState.WALK_BACKWARD)
+                || CameraState.isFlagEnabled(this.currentState, CameraState.RUN_FORWARD);
 
+    }
+
+    public boolean isWalking() {
+        return CameraState.isFlagEnabled(this.currentState, CameraState.WALK_FORWARD)
+                || CameraState.isFlagEnabled(this.currentState, CameraState.WALK_BACKWARD);
+    }
+
+    public boolean isRunning() {
+        return CameraState.isFlagEnabled(this.currentState, CameraState.RUN_FORWARD);
     }
 
     public boolean isTurning() {
@@ -172,44 +198,66 @@ public final class Camera {
     }
 
     /**
-     *
+     * Static class to handle keyboard input for the Camera object.
      */
     private static class CameraKeyAdapter extends KeyAdapter {
 
         /**
-         *
+         * Camera instance for variables and whatnot.
          */
         private final Camera CAMERA;
 
+        /**
+         * Set of keys currently toggled. Useful for determining multiple states.
+         */
+        private final Set<Integer> PRESSED_KEYS;
+
         public CameraKeyAdapter(final Camera camera) {
             this.CAMERA = camera;
+            this.PRESSED_KEYS = new HashSet<>();
         }
 
         @Override
-        public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == KeyEvent.VK_W) {
-                this.CAMERA.currentState |= CameraState.MOVE_FORWARD;
-                this.CAMERA.speed = 2;
+        public void keyPressed(final KeyEvent e) {
+            this.PRESSED_KEYS.add(e.getKeyCode());
+            // If they press W and hold the shift key, they sprint. Otherwise, they walk.
+            if (this.PRESSED_KEYS.contains(KeyEvent.VK_W)) {
+                this.CAMERA.currentState |= CameraState.WALK_FORWARD;
+                if (this.PRESSED_KEYS.contains(KeyEvent.VK_SHIFT)) {
+                    this.CAMERA.currentState |= CameraState.RUN_FORWARD;
+                    this.CAMERA.speed = this.CAMERA.DEFAULT_RUN_SPEED;
+                } else {
+                    this.CAMERA.speed = this.CAMERA.DEFAULT_WALK_SPEED;
+                }
             } else if (e.getKeyCode() == KeyEvent.VK_S) {
-                this.CAMERA.currentState |= CameraState.MOVE_BACKWARD;
-                this.CAMERA.speed = -2;
+                // Walking backwards...
+                this.CAMERA.currentState |= CameraState.WALK_BACKWARD;
+                this.CAMERA.speed = this.CAMERA.DEFAULT_WALK_SPEED;
             }
 
+            // Turning.
             if (e.getKeyCode() == KeyEvent.VK_A) {
                 this.CAMERA.currentState |= CameraState.TURN_LEFT;
-                this.CAMERA.setFovDelta(-3);
+                this.CAMERA.setFovDelta(-this.CAMERA.DEFAULT_TURN_SPEED);
             } else if (e.getKeyCode() == KeyEvent.VK_D) {
                 this.CAMERA.currentState |= CameraState.TURN_RIGHT;
-                this.CAMERA.setFovDelta(3);
+                this.CAMERA.setFovDelta(this.CAMERA.DEFAULT_TURN_SPEED);
             }
         }
 
         @Override
-        public void keyReleased(KeyEvent e) {
+        public void keyReleased(final KeyEvent e) {
+            this.PRESSED_KEYS.remove(e.getKeyCode());
+            if (e.getKeyCode() == KeyEvent.VK_SHIFT) {
+                this.CAMERA.currentState &= ~CameraState.RUN_FORWARD;
+                this.CAMERA.speed = this.CAMERA.DEFAULT_WALK_SPEED;
+            }
+
             if (e.getKeyCode() == KeyEvent.VK_W || e.getKeyCode() == KeyEvent.VK_S) {
-                this.CAMERA.currentState &= ~(CameraState.MOVE_FORWARD | CameraState.MOVE_BACKWARD);
+                this.CAMERA.currentState &= ~(CameraState.WALK_FORWARD | CameraState.WALK_BACKWARD);
                 this.CAMERA.speed = 0;
             }
+
             if (e.getKeyCode() == KeyEvent.VK_A || e.getKeyCode() == KeyEvent.VK_D) {
                 this.CAMERA.currentState &= ~(CameraState.TURN_LEFT | CameraState.TURN_RIGHT);
             }

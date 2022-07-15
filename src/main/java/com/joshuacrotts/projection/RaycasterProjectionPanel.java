@@ -4,6 +4,7 @@ import com.joshuacrotts.Ray;
 import com.joshuacrotts.RaycasterPanel;
 import com.joshuacrotts.RaycasterRunner;
 import com.joshuacrotts.RaycasterUtils;
+import com.joshuacrotts.entity.Camera;
 
 import javax.swing.*;
 import java.awt.*;
@@ -156,6 +157,7 @@ public class RaycasterProjectionPanel extends JPanel {
             final double RAY_COSANGLE = RaycasterUtils.cos(Math.toRadians(ray.getAngle()));
             final double RAY_SINANGLE = RaycasterUtils.sin(Math.toRadians(ray.getAngle()));
 
+            // Iterate from the bottom of the wall to the bottom of the projection plane.
             for (int y = (int) (wallY + wallHeight + 1); y < this.getPreferredSize().height; y++) {
                 double r = y - this.getPreferredSize().height / 2.f;
                 double d = (CAMERA_HEIGHT * DTPP / r) / ANGLE;
@@ -173,4 +175,7 @@ public class RaycasterProjectionPanel extends JPanel {
         }
     }
 
+    public Camera getCamera() {
+        return this.RAYCASTER_PANEL.getCamera();
+    }
 }
