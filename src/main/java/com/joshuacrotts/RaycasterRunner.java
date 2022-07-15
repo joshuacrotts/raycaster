@@ -13,12 +13,12 @@ public final class RaycasterRunner extends SwingApplication {
     /**
      * Width of the JFrame.
      */
-    private static final int WIDTH = 640;
+    private static final int WIDTH = 1280;
 
     /**
      * Height of the JFrame.
      */
-    private static final int HEIGHT = 400;
+    private static final int HEIGHT = 640;
 
     /**
      * The frames-per-second that we want this application to achieve.

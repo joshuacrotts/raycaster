@@ -1,6 +1,7 @@
 <h1 align="center">Raycaster</h1>
 <p align="center">
-    <img width="400" height="225" src="docs/raycaster.gif">
+<video src="docs/raycaster.mp4" controls="controls" style="max-width: 730px;">
+</video>
 </p>
 
 ## About Raycaster
