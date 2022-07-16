@@ -5,10 +5,13 @@ import com.joshuacrotts.RaycasterPanel;
 import com.joshuacrotts.RaycasterRunner;
 import com.joshuacrotts.RaycasterUtils;
 import com.joshuacrotts.entity.Camera;
+import com.joshuacrotts.entity.texture.TextureSprite;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 
 public class RaycasterProjectionPanel extends JPanel {
 
@@ -65,6 +68,7 @@ public class RaycasterProjectionPanel extends JPanel {
         this.PROJECTION_CEILING.draw(g2d);
         this.PROJECTION_FLOOR.draw(g2d);
         this.project(g2d);
+        this.projectSprites(g2d);
         this.PROJECTION_CAMERA.draw(g2d);
     }
 
@@ -171,7 +175,22 @@ public class RaycasterProjectionPanel extends JPanel {
         }
     }
 
+    private void projectSprites(final Graphics2D g2) {
+        ArrayList<TextureSprite> sprites = this.RAYCASTER_PANEL.getTileMap().getSprites();
+        for (int s = 0; s < sprites.size(); s++) {
+            TextureSprite sp = sprites.get(s);
+            // project
+            double fov = this.RAYCASTER_PANEL.getCamera().getFov();
+            double d = Point2D.distanceSq(sp.getX(), sp.getY(), this.RAYCASTER_PANEL.getCamera().getX(), this.RAYCASTER_PANEL.getCamera().getY());
+            double xInc = sp.getX() - this.RAYCASTER_PANEL.getCamera().getX();
+            double yInc = sp.getY() - this.RAYCASTER_PANEL.getCamera().getY();
+            double thetaTemp = Math.toDegrees(Math.atan2(yInc, xInc));
+            System.out.println(thetaTemp);
+        }
+    }
+
     public Camera getCamera() {
         return this.RAYCASTER_PANEL.getCamera();
     }
+
 }
