@@ -201,7 +201,13 @@ public class RaycasterProjectionPanel extends JPanel {
             double sprite_dir = Math.toDegrees(Math.atan2(sp.getY() - this.getCamera().getY(), sp.getX() - this.getCamera().getX()));
             double sprite_dist = sp.getDistance();
             double sprite_screen_size = Math.min(2000, PROJ_HEIGHT*TEXTURE_SIZE / sprite_dist);
-            int h_offset = (int) ((sprite_dir - CA) * (PROJ_WIDTH) / (FOV) + (PROJ_WIDTH) / 2 - sprite_screen_size / 2);
+
+            // Fix the angle.
+            while (sprite_dir - CA > 180) sprite_dir -= 360;
+            while (sprite_dir - CA < -180) sprite_dir += 360;
+
+            // Project the sprite into the plane.
+            int h_offset = (int) ((sprite_dir - CA) * PROJ_WIDTH / FOV + PROJ_WIDTH / 2 - sprite_screen_size / 2);
             int v_offset = (int) (PROJ_HEIGHT / 2 - sprite_screen_size / 2);
             for (int i = 0; i < sprite_screen_size; i++) {
                 if (h_offset + i < 0 || h_offset + i >= PROJ_WIDTH) { continue; }
