@@ -51,7 +51,7 @@ public class ProjectionCamera {
     }
 
     public void draw(final Graphics2D g2) {
-        this.oscillationAngle += this.getOscillationSpeed() % 360;
+        this.oscillationAngle += this.getOscillationSpeed();
         // Convert to the lemniscate coordinates.
         double x = this.OSCILLATION_INTENSITY * RaycasterUtils.cos(Math.toRadians(this.oscillationAngle));
         double y = this.OSCILLATION_INTENSITY * RaycasterUtils.sin(Math.toRadians(this.oscillationAngle * 2.f));

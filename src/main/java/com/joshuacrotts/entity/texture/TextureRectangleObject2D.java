@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class TextureRectangleObject2D extends RectangleObject2D implements Texturable {
 
     /**
-     *
+     * Texture associated with this circle object.
      */
     private final BufferedImage TEXTURE;
 

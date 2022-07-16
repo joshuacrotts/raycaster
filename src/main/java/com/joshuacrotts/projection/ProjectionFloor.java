@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 public final class ProjectionFloor extends Rectangle2D.Double {
 
     /**
-     * Color used for the floor.
+     * Color used for the floor if textures are disabled.
      */
     private final Color FLOOR_COLOR = new Color(41, 41, 41);
 
@@ -19,17 +19,17 @@ public final class ProjectionFloor extends Rectangle2D.Double {
     private final RaycasterProjectionPanel PROJECTION_PANEL;
 
     /**
-     *
+     * Texture to project onto the floor.
      */
     private final BufferedImage FLOOR_TEXTURE;
 
     /**
-     *
+     * Pixel data of the floor drawn on the current frame.
      */
     private final BufferedImage FLOOR_BUFFER;
 
     /**
-     *
+     * Keeps track of whether we want to use textured floors or not.
      */
     private boolean texturedFloor;
 

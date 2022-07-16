@@ -50,19 +50,19 @@ public final class RaycasterUtils {
         }
     }
 
-    public static final float sin(double rad) {
+    public static float sin(double rad) {
         return sin[(int) (rad * radToIndex) & SIN_MASK];
     }
 
-    public static final float cos(double rad) {
+    public static float cos(double rad) {
         return cos[(int) (rad * radToIndex) & SIN_MASK];
     }
 
-    public static final float sinDeg(double deg) {
+    public static float sinDeg(double deg) {
         return sin[(int) (deg * degToIndex) & SIN_MASK];
     }
 
-    public static final float cosDeg(double deg) {
+    public static float cosDeg(double deg) {
         return cos[(int) (deg * degToIndex) & SIN_MASK];
     }
 

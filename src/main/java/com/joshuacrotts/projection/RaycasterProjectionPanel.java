@@ -11,6 +11,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
 import java.util.ArrayList;
 
 public class RaycasterProjectionPanel extends JPanel {
@@ -41,19 +42,31 @@ public class RaycasterProjectionPanel extends JPanel {
     private final ProjectionCeiling PROJECTION_CEILING;
 
     /**
+     *
+     */
+    private final ProjectionSprite PROJECTION_SPRITE;
+
+    /**
      * Floor rendered as the bottom-half of the projection plane.
      */
     private final ProjectionFloor PROJECTION_FLOOR;
+
+    /**
+     * Depth of each wall cast out by the rays. Used when rendering sprites.
+     */
+    private final double[] Z_DEPTH_LIST;
 
     public RaycasterProjectionPanel(final RaycasterRunner raycasterRunner, final RaycasterPanel raycasterPanel) {
         this.RUNNER = raycasterRunner;
         this.setPreferredSize(new Dimension(this.RUNNER.getWidth() / 2, this.RUNNER.getHeight()));
         this.RAYCASTER_PANEL = raycasterPanel;
+        this.PROJECTION_SPRITE = new ProjectionSprite(this);
         this.PROJECTION_CAMERA = new ProjectionCamera(this);
         this.PROJECTION_CEILING = new ProjectionCeiling(this);
         this.PROJECTION_FLOOR = new ProjectionFloor(this);
         this.PROJECTION_CEILING.setTexturedCeiling(true);
         this.PROJECTION_FLOOR.setTexturedFloor(true);
+        this.Z_DEPTH_LIST = new double[this.RAYCASTER_PANEL.getResolution()];
     }
 
     public void update() {
@@ -78,9 +91,9 @@ public class RaycasterProjectionPanel extends JPanel {
     private void project(final Graphics2D g2) {
         Ray[] rayList = this.RAYCASTER_PANEL.getRayList();
         for (int i = 0; i < rayList.length; i++) {
-            if (rayList[i].getDistance() == Double.POSITIVE_INFINITY) {
-                continue;
-            }
+            if (rayList[i].getDistance() == Double.POSITIVE_INFINITY) { continue; }
+            this.Z_DEPTH_LIST[i] = rayList[i].getDistance();
+
             // Generate the (x, y) coordinate of the wall, as well as its height.
             double wallX = RaycasterUtils.normalize(i, 0, rayList.length, 0, this.getPreferredSize().width);
             double wallHeight = this.getPreferredSize().height * MAX_HEIGHT_OFFSET / rayList[i].getDistance();
@@ -100,11 +113,8 @@ public class RaycasterProjectionPanel extends JPanel {
      * @param g2
      */
     private void projectWall(final Ray ray, final double wallX, final double wallY, final double wallHeight, final Graphics2D g2) {
-        if (ray.getData().isTexture()) {
-            this.projectTexture(ray, wallX, wallY, wallHeight, g2);
-        } else if (ray.getData().isColor()) {
-            this.projectColor(ray, wallX, wallY, wallHeight, g2);
-        }
+        if (ray.getData().isTexture()) { this.projectTexture(ray, wallX, wallY, wallHeight, g2); }
+        else if (ray.getData().isColor()) { this.projectColor(ray, wallX, wallY, wallHeight, g2); }
     }
 
     /**
@@ -175,18 +185,39 @@ public class RaycasterProjectionPanel extends JPanel {
         }
     }
 
+    /**
+     *
+     * @param g2
+     */
     private void projectSprites(final Graphics2D g2) {
+        final int TEXTURE_SIZE = 64;
+        final int PROJ_HEIGHT = this.RAYCASTER_PANEL.getPreferredSize().height;
+        final int PROJ_WIDTH = this.RAYCASTER_PANEL.getPreferredSize().width;
+        final double FOV = this.getCamera().getFov();
+        double CA = this.getCamera().getCurrentAngle();
         ArrayList<TextureSprite> sprites = this.RAYCASTER_PANEL.getTileMap().getSprites();
         for (int s = 0; s < sprites.size(); s++) {
             TextureSprite sp = sprites.get(s);
-            // project
-            double fov = this.RAYCASTER_PANEL.getCamera().getFov();
-            double d = Point2D.distanceSq(sp.getX(), sp.getY(), this.RAYCASTER_PANEL.getCamera().getX(), this.RAYCASTER_PANEL.getCamera().getY());
-            double xInc = sp.getX() - this.RAYCASTER_PANEL.getCamera().getX();
-            double yInc = sp.getY() - this.RAYCASTER_PANEL.getCamera().getY();
-            double thetaTemp = Math.toDegrees(Math.atan2(yInc, xInc));
-            System.out.println(thetaTemp);
+            double sprite_dir = Math.toDegrees(Math.atan2(sp.getY() - this.getCamera().getY(), sp.getX() - this.getCamera().getX()));
+            double sprite_dist = sp.getDistance();
+            double sprite_screen_size = Math.min(2000, PROJ_HEIGHT*TEXTURE_SIZE / sprite_dist);
+            int h_offset = (int) ((sprite_dir - CA) * (PROJ_WIDTH) / (FOV) + (PROJ_WIDTH) / 2 - sprite_screen_size / 2);
+            int v_offset = (int) (PROJ_HEIGHT / 2 - sprite_screen_size / 2);
+            for (int i = 0; i < sprite_screen_size; i++) {
+                if (h_offset + i < 0 || h_offset + i >= PROJ_WIDTH) { continue; }
+                if (this.Z_DEPTH_LIST[h_offset + i] < sprite_dist) { continue; }
+                for (int j = 0; j < sprite_screen_size; j++) {
+                    if (v_offset + j < 0 || v_offset + j >= PROJ_HEIGHT) { continue; }
+                    int color = sp.getTexture().getRGB((int) (i * sp.getWidth() / sprite_screen_size), (int) (j * sp.getHeight() / sprite_screen_size));
+                    if (color != ProjectionSprite.TEXTURE_BG_COLOR) {
+                        this.PROJECTION_SPRITE.setPixel(h_offset+i,v_offset+j, color);
+                    }
+                }
+            }
         }
+
+        this.PROJECTION_SPRITE.draw(g2);
+
     }
 
     public Camera getCamera() {

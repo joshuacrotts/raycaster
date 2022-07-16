@@ -108,8 +108,10 @@ public final class Camera {
         if (this.isTurning()) {
             this.currentAngle += this.fovDelta;
         }
-        if(this.currentAngle<0)this.currentAngle=360;
-        if(this.currentAngle>360)this.currentAngle=0;
+
+        // Check to make sure angle is still in bounds
+        if (this.currentAngle >= 360) this.currentAngle-=360;
+        if (this.currentAngle < 0) this.currentAngle+=360;
     }
 
     public void draw(final Graphics2D g2) {
@@ -124,10 +126,12 @@ public final class Camera {
         path.closePath();
         g2.fill(path);
         g2.setTransform(old);
+        g2.setColor(Color.YELLOW);
+        g2.fill(this.getBoundingBox());
     }
 
     public Rectangle2D.Double getBoundingBox() {
-        return new Rectangle2D.Double(this.getX() - this.getWidth() / 2.f + 5, this.getY() - this.getHeight() / 2.f + 5, this.getWidth() - 10, this.getHeight() - 10);
+        return new Rectangle2D.Double(this.getX() - 10, this.getY() - 5, this.getWidth() - 10, this.getHeight() - 10);
     }
 
     public int getWidth() {

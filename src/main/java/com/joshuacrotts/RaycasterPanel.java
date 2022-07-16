@@ -4,11 +4,14 @@ import com.joshuacrotts.entity.Camera;
 import com.joshuacrotts.entity.CollidableEntity2D;
 import com.joshuacrotts.entity.EntityData;
 import com.joshuacrotts.entity.IntersectionDataPair;
+import com.joshuacrotts.entity.texture.TextureSprite;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Collections;
+import java.util.Comparator;
 
 /**
  * Displays and updates the logic for the top-down raycasting implementation.
@@ -63,6 +66,7 @@ public final class RaycasterPanel extends JPanel {
     public void update() {
         this.CAMERA.update();
         this.updateCollisions();
+        this.updateSpriteDistances();
         this.computeRays();
 
     }
@@ -127,6 +131,14 @@ public final class RaycasterPanel extends JPanel {
         }
     }
 
+    private void updateSpriteDistances() {
+        for (TextureSprite sp : this.MAP.getSprites()) {
+            sp.setDistance(Point2D.distance(this.CAMERA.getX(), this.CAMERA.getY(), sp.getX(), sp.getY()));
+        }
+
+        this.MAP.getSprites().sort(new TextureSprite.TextureSpriteComparator());
+    }
+
     /**
      *
      */
@@ -165,5 +177,9 @@ public final class RaycasterPanel extends JPanel {
 
     public Camera getCamera() {
         return this.CAMERA;
+    }
+
+    public int getResolution() {
+        return this.RESOLUTION;
     }
 }

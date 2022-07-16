@@ -9,7 +9,7 @@ import java.awt.image.BufferedImage;
 public final class ProjectionCeiling extends Rectangle2D.Double {
 
     /**
-     * Color to use for the sky.
+     * Color to use for the sky when textures are disabled.
      */
     private final Color CEILING_COLOR = new Color(22, 23, 22);
 
@@ -19,12 +19,12 @@ public final class ProjectionCeiling extends Rectangle2D.Double {
     private final RaycasterProjectionPanel PROJECTION_PANEL;
 
     /**
-     *
+     * Image projected onto the ceiling.
      */
     private final BufferedImage CEILING_TEXTURE;
 
     /**
-     *
+     * Pixel data of the ceiling drawn on the current frame.
      */
     private final BufferedImage CEILING_BUFFER;
 

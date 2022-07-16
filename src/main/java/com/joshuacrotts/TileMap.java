@@ -21,12 +21,12 @@ public class TileMap {
     private static final int TILE_SIZE = 64;
 
     /**
-     *
+     * List of collildable entities in our world.
      */
     private final ArrayList<CollidableEntity2D> ENTITIES;
 
     /**
-     *
+     * List of sprites to project in the world. For now, these are non-collidable.
      */
     private final ArrayList<TextureSprite> SPRITES;
 
@@ -82,7 +82,7 @@ public class TileMap {
                             break;
                         }
                         case 'S': {
-                            this.SPRITES.add(new TextureSprite(x, y, TILE_SIZE, TILE_SIZE, "barrel.png"));
+                            this.SPRITES.add(new TextureSprite(x, y, TILE_SIZE, TILE_SIZE, "monster.png"));
                             break;
                         }
                     }
