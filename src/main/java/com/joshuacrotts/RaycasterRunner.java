@@ -61,7 +61,8 @@ public final class RaycasterRunner extends SwingApplication {
         this.addComponent(this.RAYCASTER_PROJ_PANEL);
         this.packComponents();
         this.setVisible(true);
-        this.RAYCASTER_PANEL.requestFocus(true); // Very important! Do not delete this line.
+        this.RAYCASTER_PANEL.requestFocus(true);
+        this.start();
     }
 
     public static void main(final String[] args) {
@@ -71,9 +72,7 @@ public final class RaycasterRunner extends SwingApplication {
 
     @Override
     public void run() {
-        if (this.RAYCASTER_PANEL != null && this.RAYCASTER_PROJ_PANEL != null) {
-            this.RAYCASTER_PANEL.update();
-            this.RAYCASTER_PROJ_PANEL.update();
-        }
+        this.RAYCASTER_PANEL.update();
+        this.RAYCASTER_PROJ_PANEL.update();
     }
 }

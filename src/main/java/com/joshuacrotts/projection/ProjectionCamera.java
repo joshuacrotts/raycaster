@@ -31,13 +31,23 @@ public class ProjectionCamera {
     private final int OSCILLATION_INTENSITY = 20;
 
     /**
+     *
+     */
+    private final double SPRITE_X_SCALE = 2.f;
+
+    /**
+     *
+     */
+    private final double SPRITE_Y_SCALE = 2.5f;
+
+    /**
      * Current angle of the lemniscate iteration. Wraps around after 360.
      */
     private double oscillationAngle;
 
     public ProjectionCamera(final RaycasterProjectionPanel projectionPanel) {
         this.PROJECTION_PANEL = projectionPanel;
-        this.TEXTURE = TextureCache.getImage("wolf3d.png");
+        this.TEXTURE = TextureCache.getImage("wolf3d_3.png");
     }
 
     public void draw(final Graphics2D g2) {
@@ -45,8 +55,8 @@ public class ProjectionCamera {
         // Convert to the lemniscate coordinates.
         double x = this.OSCILLATION_INTENSITY * RaycasterUtils.cos(Math.toRadians(this.oscillationAngle));
         double y = this.OSCILLATION_INTENSITY * RaycasterUtils.sin(Math.toRadians(this.oscillationAngle * 2.f));
-        double w = this.PROJECTION_PANEL.getPreferredSize().width / 1.5f;
-        double h = this.PROJECTION_PANEL.getPreferredSize().height / 1.5f;
+        double w = this.PROJECTION_PANEL.getPreferredSize().width / this.SPRITE_X_SCALE;
+        double h = this.PROJECTION_PANEL.getPreferredSize().height / this.SPRITE_Y_SCALE;
         int cx = (int) (this.PROJECTION_PANEL.getPreferredSize().width / 2.f - w / 2.f);
         g2.drawImage(this.TEXTURE,(int) (x + cx),
                 this.OSCILLATION_Y_OFFSET + (int) (y + this.PROJECTION_PANEL.getPreferredSize().height - h),

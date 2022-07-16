@@ -58,17 +58,9 @@ public abstract class SwingApplication {
             }
         });
 
-        /*
-         * Sets the current FPS and the millisecond update time for the Swing
-         * timer.
-         */
+        /* Sets the current FPS and the millisecond update time for the Swing timer.*/
         this.fps = fps;
         this.ms = SECONDS_TO_MS / fps;
-
-        /* Starts the timer. */
-        SwingUtilities.invokeLater(() -> {
-            this.start();
-        });
     }
 
     /**
@@ -142,19 +134,21 @@ public abstract class SwingApplication {
     /**
      * Starts the program if it is not already running.
      */
-    private synchronized void start() {
+    public synchronized void start() {
         if (this.isRunning) {
             return;
         }
 
         this.isRunning = true;
-        this.update();
+        SwingUtilities.invokeLater(() -> {
+            this.update();
+        });
     }
 
     /**
      * Stops and destroys the timer and frame if it is not already stopped.
      */
-    private synchronized void stop() {
+    public synchronized void stop() {
         if (!this.isRunning) {
             return;
         }

@@ -62,7 +62,7 @@ public class RaycasterProjectionPanel extends JPanel {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         g2d.setColor(Color.BLACK);
-        g2d.fillRect(0, 0, this.getPreferredSize().width, this.getPreferredSize().height);
+        g2d.fillRect(0, 0, this.getWidth(), this.getHeight());
         this.PROJECTION_CEILING.draw(g2d);
         this.PROJECTION_FLOOR.draw(g2d);
         this.project(g2d);
@@ -73,20 +73,19 @@ public class RaycasterProjectionPanel extends JPanel {
      * @param g2
      */
     private void project(final Graphics2D g2) {
-        ArrayList<Ray> rayList = this.RAYCASTER_PANEL.getRayList();
-        for (int i = 0; i < rayList.size(); i++) {
-            if (rayList.get(i).getDistance() == 0) {
+        Ray[] rayList = this.RAYCASTER_PANEL.getRayList();
+        for (int i = 0; i < rayList.length; i++) {
+            if (rayList[i].getDistance() == Double.POSITIVE_INFINITY) {
                 continue;
             }
             // Generate the (x, y) coordinate of the wall, as well as its height.
-            double wallX = RaycasterUtils.normalize(i, 0, rayList.size(), 0, this.getPreferredSize().width);
-            double wallHeight = this.getPreferredSize().height * MAX_HEIGHT_OFFSET / rayList.get(i).getDistance();
+            double wallX = RaycasterUtils.normalize(i, 0, rayList.length, 0, this.getPreferredSize().width);
+            double wallHeight = this.getPreferredSize().height * MAX_HEIGHT_OFFSET / rayList[i].getDistance();
             double wallY = this.getPreferredSize().height / 2.f - wallHeight / 2.f;
 
             // Depending on what "type" the Ray stores, we render differently.
-            Ray ray = rayList.get(i);
-            this.projectWall(ray, wallX, wallY, wallHeight, g2);
-            this.projectFloorCeiling(ray, wallX, wallY, wallHeight);
+            this.projectWall(rayList[i], wallX, wallY, wallHeight, g2);
+            this.projectFloorCeiling(rayList[i], wallX, wallY, wallHeight);
         }
     }
 
@@ -99,9 +98,9 @@ public class RaycasterProjectionPanel extends JPanel {
      * @param g2
      */
     private void projectWall(final Ray ray, final double wallX, final double wallY, final double wallHeight, final Graphics2D g2) {
-        if (ray.getEntityData().isTexture()) {
+        if (ray.getData().isTexture()) {
             this.projectTexture(ray, wallX, wallY, wallHeight, g2);
-        } else if (ray.getEntityData().isColor()) {
+        } else if (ray.getData().isColor()) {
             this.projectColor(ray, wallX, wallY, wallHeight, g2);
         }
     }
@@ -114,7 +113,7 @@ public class RaycasterProjectionPanel extends JPanel {
      * @param g2
      */
     private void projectTexture(final Ray ray, final double wallX, final double wallY, final double wallHeight, final Graphics2D g2) {
-        BufferedImage img = ray.getEntityData().getTexture();
+        BufferedImage img = ray.getData().getTexture();
         int imgX;
         if (ray.getLine().getY2() != (int) ray.getLine().getY2()) {
             imgX = (int) ((ray.getLine().getY2() / img.getWidth() - Math.floor(ray.getLine().getY2() / img.getWidth())) * img.getWidth());
@@ -133,7 +132,7 @@ public class RaycasterProjectionPanel extends JPanel {
      * @param g2
      */
     private void projectColor(final Ray ray, final double wallX, final double wallY, final double wallHeight, final Graphics2D g2) {
-        g2.setColor(ray.getEntityData().getColor());
+        g2.setColor(ray.getData().getColor());
         g2.drawLine((int) wallX, (int) wallY, (int) wallX, (int) (wallY + wallHeight));
     }
 

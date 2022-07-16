@@ -232,7 +232,7 @@ public final class Camera {
             } else if (e.getKeyCode() == KeyEvent.VK_S) {
                 // Walking backwards...
                 this.CAMERA.currentState |= CameraState.WALK_BACKWARD;
-                this.CAMERA.speed = this.CAMERA.DEFAULT_WALK_SPEED;
+                this.CAMERA.speed = -this.CAMERA.DEFAULT_WALK_SPEED;
             }
 
             // Turning.
