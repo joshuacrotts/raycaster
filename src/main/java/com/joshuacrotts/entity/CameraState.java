@@ -12,7 +12,7 @@ public final class CameraState {
     private CameraState() {
     }
 
-    public static boolean isFlagEnabled(int flags, int mask) {
+    public static boolean isFlagEnabled(final int flags, final int mask) {
         return (flags & mask) != 0;
     }
 }

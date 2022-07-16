@@ -14,12 +14,21 @@ public abstract class Entity2D implements Drawable2D {
      */
     private double y;
 
-    public Entity2D() {
-    }
+    /**
+     * Width of the entity.
+     */
+    private double w;
 
-    public Entity2D(final double x, final double y) {
+    /**
+     * Height of the entity.
+     */
+    private double h;
+
+    public Entity2D(final double x, final double y, final double w, final double h) {
         this.x = x;
         this.y = y;
+        this.w = w;
+        this.h = h;
     }
 
     @Override
@@ -39,5 +48,21 @@ public abstract class Entity2D implements Drawable2D {
 
     public void setY(final double y) {
         this.y = y;
+    }
+
+    public double getWidth() {
+        return w;
+    }
+
+    public void setWidth(double w) {
+        this.w = w;
+    }
+
+    public double getHeight() {
+        return h;
+    }
+
+    public void setHeight(double h) {
+        this.h = h;
     }
 }

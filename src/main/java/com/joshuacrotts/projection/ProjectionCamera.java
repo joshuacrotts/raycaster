@@ -58,15 +58,19 @@ public class ProjectionCamera {
         double w = this.PROJECTION_PANEL.getPreferredSize().width / this.SPRITE_X_SCALE;
         double h = this.PROJECTION_PANEL.getPreferredSize().height / this.SPRITE_Y_SCALE;
         int cx = (int) (this.PROJECTION_PANEL.getPreferredSize().width / 2.f - w / 2.f);
-        g2.drawImage(this.TEXTURE,(int) (x + cx),
+        g2.drawImage(this.TEXTURE, (int) (x + cx),
                 this.OSCILLATION_Y_OFFSET + (int) (y + this.PROJECTION_PANEL.getPreferredSize().height - h),
-                (int) w,(int) h, null);
+                (int) w, (int) h, null);
     }
 
     private double getOscillationSpeed() {
         Camera ca = this.PROJECTION_PANEL.getCamera();
-        if (ca.isRunning()) { return 5; }
-        else if (ca.isWalking()) { return 2; }
-        else { return 1; }
+        if (ca.isRunning()) {
+            return 5;
+        } else if (ca.isWalking()) {
+            return 2;
+        } else {
+            return 1;
+        }
     }
 }

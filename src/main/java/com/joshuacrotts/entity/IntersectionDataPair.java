@@ -5,12 +5,12 @@ import java.awt.geom.Point2D;
 public class IntersectionDataPair {
 
     /**
-     *
+     * Point of intersection (i.e., where the collision occurs).
      */
     private final Point2D.Double POINT;
 
     /**
-     *
+     * Data associated with this intersection point. Useful for the projection stage (can be a BI or a color).
      */
     private final EntityData DATA;
 

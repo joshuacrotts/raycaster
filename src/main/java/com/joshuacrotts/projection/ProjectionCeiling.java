@@ -37,7 +37,7 @@ public final class ProjectionCeiling extends Rectangle2D.Double {
         super(0, 0, projectionPanel.getPreferredSize().width, projectionPanel.getPreferredSize().height / 2.f);
         this.PROJECTION_PANEL = projectionPanel;
         this.CEILING_TEXTURE = TextureCache.getImage("stonebrick.png");
-        this.CEILING_BUFFER = new BufferedImage(projectionPanel.getPreferredSize().width, projectionPanel.getPreferredSize().height/2, BufferedImage.TYPE_INT_RGB);
+        this.CEILING_BUFFER = new BufferedImage(projectionPanel.getPreferredSize().width, projectionPanel.getPreferredSize().height / 2, BufferedImage.TYPE_INT_RGB);
     }
 
     public void draw(final Graphics2D g2) {
@@ -53,11 +53,11 @@ public final class ProjectionCeiling extends Rectangle2D.Double {
         this.CEILING_BUFFER.setRGB(dx, dy, this.CEILING_TEXTURE.getRGB(sx, sy));
     }
 
-    public void setTexturedCeiling(final boolean texturedCeiling) {
-        this.texturedCeiling = texturedCeiling;
-    }
-
     public boolean isTexturedCeiling() {
         return this.texturedCeiling;
+    }
+
+    public void setTexturedCeiling(final boolean texturedCeiling) {
+        this.texturedCeiling = texturedCeiling;
     }
 }

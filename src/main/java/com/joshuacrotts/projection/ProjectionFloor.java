@@ -37,7 +37,7 @@ public final class ProjectionFloor extends Rectangle2D.Double {
         super(0, projectionPanel.getPreferredSize().height / 2.f, projectionPanel.getPreferredSize().width, projectionPanel.getPreferredSize().height);
         this.PROJECTION_PANEL = projectionPanel;
         this.FLOOR_TEXTURE = TextureCache.getImage("floor_2.png");
-        this.FLOOR_BUFFER = new BufferedImage(projectionPanel.getPreferredSize().width, projectionPanel.getPreferredSize().height/2, BufferedImage.TYPE_INT_RGB);
+        this.FLOOR_BUFFER = new BufferedImage(projectionPanel.getPreferredSize().width, projectionPanel.getPreferredSize().height / 2, BufferedImage.TYPE_INT_RGB);
     }
 
     public void draw(final Graphics2D g2) {
@@ -53,11 +53,11 @@ public final class ProjectionFloor extends Rectangle2D.Double {
         this.FLOOR_BUFFER.setRGB(dx, dy, this.FLOOR_TEXTURE.getRGB(sx, sy));
     }
 
-    public void setTexturedFloor(final boolean texturedFloor) {
-        this.texturedFloor = texturedFloor;
-    }
-
     public boolean isTexturedFloor() {
         return this.texturedFloor;
+    }
+
+    public void setTexturedFloor(final boolean texturedFloor) {
+        this.texturedFloor = texturedFloor;
     }
 }

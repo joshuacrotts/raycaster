@@ -2,13 +2,13 @@ package com.joshuacrotts.entity;
 
 import com.joshuacrotts.RaycasterPanel;
 import com.joshuacrotts.RaycasterUtils;
-import com.joshuacrotts.projection.RaycasterProjectionPanel;
 
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Path2D;
+import java.awt.geom.Rectangle2D;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -124,6 +124,10 @@ public final class Camera {
         g2.setTransform(old);
     }
 
+    public Rectangle2D.Double getBoundingBox() {
+        return new Rectangle2D.Double(this.getX() - this.getWidth() / 2.f + 5, this.getY() - this.getHeight() / 2.f + 5, this.getWidth() - 10, this.getHeight() - 10);
+    }
+
     public int getWidth() {
         return this.WIDTH;
     }
@@ -166,6 +170,15 @@ public final class Camera {
 
     public void setFovDelta(double fovDelta) {
         this.fovDelta = fovDelta;
+    }
+
+    public void setCurrentState(int stateFlags) {
+        this.currentState = stateFlags;
+    }
+
+    public void stopMoving() {
+        this.currentState &= ~CameraState.WALK_FORWARD | ~CameraState.WALK_BACKWARD | ~CameraState.RUN_FORWARD;
+        this.speed = 0;
     }
 
     public boolean isMoving() {

@@ -4,6 +4,8 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+
 
 public abstract class CircleObject2D extends CollidableEntity2D {
 
@@ -12,8 +14,8 @@ public abstract class CircleObject2D extends CollidableEntity2D {
      */
     private final double radius;
 
-    public CircleObject2D(final double x, final double y, double r) {
-        super(x, y);
+    public CircleObject2D(final double x, final double y, final double r) {
+        super(x, y, r, r);
         this.radius = r;
     }
 
@@ -34,7 +36,7 @@ public abstract class CircleObject2D extends CollidableEntity2D {
      * @param lineEnd
      * @return
      */
-    protected Point2D.Double findClosestIntersection(double cx, double cy, double radius, Point2D.Double lineStart, Point2D.Double lineEnd) {
+    protected Point2D.Double findClosestIntersection(final double cx, final double cy, final double radius, final Point2D.Double lineStart, final Point2D.Double lineEnd) {
         Point2D.Double intersection1 = new Point2D.Double();
         Point2D.Double intersection2 = new Point2D.Double();
         int intersections = this.findLineCircleIntersections(cx, cy, radius, lineStart, lineEnd, intersection1, intersection2);
@@ -55,8 +57,8 @@ public abstract class CircleObject2D extends CollidableEntity2D {
     }
 
     // Find the points of intersection.
-    protected int findLineCircleIntersections(double cx, double cy, double radius,
-                                              Point2D.Double point1, Point2D.Double point2,
+    protected int findLineCircleIntersections(final double cx, final double cy, final double radius,
+                                              final Point2D.Double point1, final Point2D.Double point2,
                                               Point2D.Double intersection1, Point2D.Double intersection2) {
         double dx, dy, A, B, C, det, t;
 
@@ -90,6 +92,11 @@ public abstract class CircleObject2D extends CollidableEntity2D {
             intersection2.y = point1.y + t * dy;
             return 2;
         }
+    }
+
+    @Override
+    public Rectangle2D.Double getBoundingBox() {
+        return new Rectangle2D.Double(this.getX(), this.getY(), this.getDiameter(), this.getDiameter());
     }
 
     public double getRadius() {

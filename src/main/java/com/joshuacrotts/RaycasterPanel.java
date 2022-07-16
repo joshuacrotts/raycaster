@@ -7,9 +7,8 @@ import com.joshuacrotts.entity.IntersectionDataPair;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
+import java.awt.geom.Rectangle2D;
 
 /**
  * Displays and updates the logic for the top-down raycasting implementation.
@@ -63,7 +62,9 @@ public final class RaycasterPanel extends JPanel {
 
     public void update() {
         this.CAMERA.update();
+        this.updateCollisions();
         this.computeRays();
+
     }
 
     @Override
@@ -122,6 +123,19 @@ public final class RaycasterPanel extends JPanel {
                 this.RAY_LIST[r].setDistance(minDist * RaycasterUtils.cos(Math.toRadians(ca)));
             } else {
                 this.RAY_LIST[r].setDistance(Double.POSITIVE_INFINITY);
+            }
+        }
+    }
+
+    /**
+     *
+     */
+    private void updateCollisions() {
+        Rectangle2D.Double cbb = this.CAMERA.getBoundingBox();
+        for (CollidableEntity2D ce2d : this.MAP.getEntities()) {
+            // For now just assume that all are collidable.
+            if (cbb.intersects(ce2d.getBoundingBox())) {
+                this.CAMERA.stopMoving();
             }
         }
     }

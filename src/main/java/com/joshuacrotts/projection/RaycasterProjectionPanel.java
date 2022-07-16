@@ -9,7 +9,6 @@ import com.joshuacrotts.entity.Camera;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.ArrayList;
 
 public class RaycasterProjectionPanel extends JPanel {
 
@@ -90,7 +89,6 @@ public class RaycasterProjectionPanel extends JPanel {
     }
 
     /**
-     *
      * @param ray
      * @param wallX
      * @param wallY
@@ -137,7 +135,6 @@ public class RaycasterProjectionPanel extends JPanel {
     }
 
     /**
-     *
      * @param ray
      * @param wallX
      * @param wallY
