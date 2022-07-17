@@ -33,7 +33,7 @@ public class ProjectionCamera {
     /**
      *
      */
-    private final double SPRITE_X_SCALE = 2.f;
+    private final double SPRITE_X_SCALE = 2.5f;
 
     /**
      *
@@ -47,7 +47,7 @@ public class ProjectionCamera {
 
     public ProjectionCamera(final RaycasterProjectionPanel projectionPanel) {
         this.PROJECTION_PANEL = projectionPanel;
-        this.TEXTURE = TextureCache.getImage("wolf3d_3.png");
+        this.TEXTURE = TextureCache.getImage("wolf3d_2.png");
     }
 
     public void draw(final Graphics2D g2) {

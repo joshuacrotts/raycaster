@@ -108,10 +108,6 @@ public final class Camera {
         if (this.isTurning()) {
             this.currentAngle += this.fovDelta;
         }
-
-        // Check to make sure angle is still in bounds
-        if (this.currentAngle >= 360) this.currentAngle-=360;
-        if (this.currentAngle < 0) this.currentAngle+=360;
     }
 
     public void draw(final Graphics2D g2) {

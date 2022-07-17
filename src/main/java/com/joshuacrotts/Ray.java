@@ -35,11 +35,18 @@ public class Ray {
         this(line, image, angle, Double.POSITIVE_INFINITY);
     }
 
+    private boolean isXside=false;
+
     public Ray(final Line2D.Double line, final EntityData entityData, final double angle, final double distance) {
         this.line = line;
         this.data = entityData;
         this.angle = angle;
         this.distance = distance;
+    }
+
+    public boolean isX() {return this.isXside;}
+    public void setXside(boolean b) {
+        this.isXside=b;
     }
 
     public void draw(final Graphics2D g2) {

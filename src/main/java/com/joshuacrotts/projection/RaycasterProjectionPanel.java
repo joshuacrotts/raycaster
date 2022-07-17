@@ -126,11 +126,13 @@ public class RaycasterProjectionPanel extends JPanel {
      */
     private void projectTexture(final Ray ray, final double wallX, final double wallY, final double wallHeight, final Graphics2D g2) {
         BufferedImage img = ray.getData().getTexture();
+
         int imgX;
-        if (ray.getLine().getY2() != (int) ray.getLine().getY2()) {
-            imgX = (int) ((ray.getLine().getY2() / img.getWidth() - Math.floor(ray.getLine().getY2() / img.getWidth())) * img.getWidth());
-        } else {
+        System.out.printf("%f,%f,%f,%f\n",ray.getLine().x1, ray.getLine().y1, ray.getLine().x2,ray.getLine().y2);
+        if (ray.isX()) {
             imgX = (int) ((ray.getLine().getX2() / img.getWidth() - Math.floor(ray.getLine().getX2() / img.getWidth())) * img.getWidth());
+        } else {
+            imgX = (int) ((ray.getLine().getY2() / img.getWidth() - Math.floor(ray.getLine().getY2() / img.getWidth())) * img.getWidth());
         }
         g2.drawImage(img, (int) wallX, (int) wallY, (int) wallX + 1, (int) (wallHeight + wallY), imgX, 0,
                 imgX + 1, img.getHeight(), null);
@@ -200,7 +202,7 @@ public class RaycasterProjectionPanel extends JPanel {
             TextureSprite sp = sprites.get(s);
             double sprite_dir = Math.toDegrees(Math.atan2(sp.getY() - this.getCamera().getY(), sp.getX() - this.getCamera().getX()));
             double sprite_dist = sp.getDistance();
-            double sprite_screen_size = Math.min(2000, PROJ_HEIGHT*TEXTURE_SIZE / sprite_dist);
+            double sprite_screen_size = Math.min(2000, PROJ_HEIGHT * TEXTURE_SIZE / sprite_dist);
 
             // Fix the angle.
             while (sprite_dir - CA > 180) sprite_dir -= 360;
