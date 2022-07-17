@@ -31,6 +31,8 @@ public abstract class Entity2D implements Drawable2D {
         this.h = h;
     }
 
+    public abstract EntityData getEntityData();
+
     @Override
     public abstract void draw(final Graphics2D g2);
 

@@ -31,6 +31,11 @@ public class TileMap {
      */
     private final ArrayList<TextureSprite> SPRITES;
 
+    /**
+     *
+     */
+    private final ArrayList<Entity2D> WORLD_OBJECTS; // SPRITES AND ENTITIES!!!!
+
     private char[][] charMap;
 
     public TileMap(final String mapFile) {
@@ -122,6 +127,6 @@ public class TileMap {
 
     public boolean isBlock(double x, double y) {
         char c = this.charMap[(int)(x/64)][(int)(y/64)];
-        return c != '0' && c != ' ';
+        return c != '0' && c != ' ' && c != 'S';
     }
 }

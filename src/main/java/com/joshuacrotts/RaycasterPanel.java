@@ -96,7 +96,7 @@ public final class RaycasterPanel extends JPanel {
             // Compute the angle of this ray, normalized to our FOV.
             double rayAngle = RaycasterUtils.normalize(r, 0, this.RESOLUTION, newMin, newMax);
 
-            double precision=128;
+            double precision=2;
             double rayCos = Math.cos(Math.toRadians(rayAngle)) / precision;
             double raySin = Math.sin(Math.toRadians(rayAngle)) / precision;
             Ray ray = this.RAY_LIST[r];
@@ -118,7 +118,7 @@ public final class RaycasterPanel extends JPanel {
             // Iterate through all objects in the plane and find collisions.
 
             // If we found a closest minima, assign it as the ray's end coordinate.
-            this.RAY_LIST[r].setData(new EntityData(TextureCache.getImage("redbrick.png")));
+            this.RAY_LIST[r].setData(new EntityData(TextureCache.getImage("stonebrick.png")));
             this.RAY_LIST[r].setAngle(rayAngle);
             double ca = RaycasterUtils.normalize(rayAngle, newMin, newMax, -this.CAMERA.getFov() / 2, this.CAMERA.getFov() / 2);
             this.RAY_LIST[r].setDistance(Point2D.distance(ray.getLine().x1, ray.getLine().y1, ray.getLine().x2, ray.getLine().y2) * RaycasterUtils.cos(Math.toRadians(ca)));

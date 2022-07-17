@@ -127,12 +127,15 @@ public class RaycasterProjectionPanel extends JPanel {
     private void projectTexture(final Ray ray, final double wallX, final double wallY, final double wallHeight, final Graphics2D g2) {
         BufferedImage img = ray.getData().getTexture();
 
+        final int CELL_SIZE = 64;
+        double ray_end_x = ray.getLine().x2;
+        double ray_end_y = ray.getLine().y2;
+
         int imgX;
-        System.out.printf("%f,%f,%f,%f\n",ray.getLine().x1, ray.getLine().y1, ray.getLine().x2,ray.getLine().y2);
-        if (ray.isX()) {
-            imgX = (int) ((ray.getLine().getX2() / img.getWidth() - Math.floor(ray.getLine().getX2() / img.getWidth())) * img.getWidth());
+        if (Math.abs(ray_end_x - CELL_SIZE * Math.round(ray_end_x/CELL_SIZE)) < Math.abs(ray_end_y - CELL_SIZE*Math.round(ray_end_y/CELL_SIZE))) {
+            imgX = (int) (ray_end_y - CELL_SIZE * Math.floor(ray_end_y / CELL_SIZE));
         } else {
-            imgX = (int) ((ray.getLine().getY2() / img.getWidth() - Math.floor(ray.getLine().getY2() / img.getWidth())) * img.getWidth());
+            imgX = (int) (CELL_SIZE * Math.ceil(ray_end_x / CELL_SIZE) - ray_end_x);
         }
         g2.drawImage(img, (int) wallX, (int) wallY, (int) wallX + 1, (int) (wallHeight + wallY), imgX, 0,
                 imgX + 1, img.getHeight(), null);
