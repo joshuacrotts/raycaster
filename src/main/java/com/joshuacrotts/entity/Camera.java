@@ -126,8 +126,6 @@ public final class Camera {
         path.closePath();
         g2.fill(path);
         g2.setTransform(old);
-        g2.setColor(Color.YELLOW);
-        g2.fill(this.getBoundingBox());
     }
 
     public Rectangle2D.Double getBoundingBox() {
